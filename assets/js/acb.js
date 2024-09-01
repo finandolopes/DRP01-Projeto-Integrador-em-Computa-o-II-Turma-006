@@ -80,22 +80,20 @@ document.addEventListener('DOMContentLoaded', function () {
         clearLineGuide();
     });
 
-    // Função para iniciar o VLibras dentro da barra lateral
     document.getElementById('btn-vlibras').addEventListener('click', function () {
-        const vlibrasContainer = document.getElementById('vlibras-container');
-
-        if (!vlibrasContainer.hasChildNodes()) {
+        if (!window.vlibrasLoaded) {
             const script = document.createElement('script');
             script.src = "https://vlibras.gov.br/app/vlibras-plugin.js";
             script.onload = function() {
-                new window.VLibras.Widget('https://vlibras.gov.br/app', vlibrasContainer);
+                new window.VLibras.Widget();
+                window.vlibrasLoaded = true;  // Marcar como carregado
             };
-            vlibrasContainer.appendChild(script);
-            vlibrasContainer.style.display = 'block';
+            document.body.appendChild(script);
         } else {
-            vlibrasContainer.classList.toggle('hidden');
+            document.getElementById('vlibras-container').classList.toggle('hidden');
         }
     });
+    
 
     function adjustFontSize(step) {
         const elements = document.querySelectorAll('body, body *:not(script):not(style)');
@@ -202,4 +200,54 @@ document.addEventListener('DOMContentLoaded', function () {
         button.classList.toggle('active');
         document.body.classList.toggle(className);
     }
+});
+document.addEventListener('DOMContentLoaded', function () {
+    const synth = window.speechSynthesis;
+    let isReadingEnabled = false; // Controla se a leitura está ativada
+    let isReading = false; // Controla se o texto está sendo lido
+
+    // Função para ler o texto
+    function readText(text) {
+        if (!isReadingEnabled || isReading) return;
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'pt-BR';  // Configura o idioma
+        isReading = true;
+
+        utterance.onend = function () {
+            isReading = false;
+        };
+
+        synth.speak(utterance);
+    }
+
+    // Ativar/desativar leitura ao passar o mouse
+    document.body.addEventListener('mouseover', function (event) {
+        if (!isReadingEnabled) return;
+
+        const element = event.target;
+
+        if (element.nodeType === Node.ELEMENT_NODE && element.tagName.match(/^(P|SPAN|LI|H[1-6])$/i)) {
+            const text = element.innerText || element.textContent;
+            readText(text);
+        }
+    });
+
+    // Leitura de texto selecionado
+    document.addEventListener('mouseup', function () {
+        if (!isReadingEnabled) return;
+
+        const selectedText = window.getSelection().toString().trim();
+
+        if (selectedText) {
+            readText(selectedText);
+        }
+    });
+
+    // Toggle para ativar/desativar leitura de texto
+    document.getElementById('btn-text-reader').addEventListener('click', function () {
+        isReadingEnabled = !isReadingEnabled;
+        this.classList.toggle('active', isReadingEnabled);
+        this.setAttribute('aria-label', isReadingEnabled ? 'Desativar leitura de texto' : 'Ativar leitura de texto');
+    });
 });
