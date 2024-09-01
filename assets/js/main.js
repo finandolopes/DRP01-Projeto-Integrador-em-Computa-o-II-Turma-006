@@ -3,7 +3,7 @@
   "use strict";
 
   /**
-   * Easy selector helper function
+   * Função Ajuda de seletor fácil
    */
   const select = (el, all = false) => {
     el = el.trim()
@@ -15,7 +15,7 @@
   }
 
   /**
-   * Easy event listener function
+   * Função Verificação de eventos
    */
   const on = (type, el, listener, all = false) => {
     let selectEl = select(el, all)
@@ -36,7 +36,7 @@
   }
 
   /**
-   * Navbar links active state on scroll
+   * Função  barra de navegação vincula o estado ativo na rolagem
    */
   let navbarlinks = select('#navbar .scrollto', true)
   const navbarlinksActive = () => {
@@ -56,7 +56,7 @@
   onscroll(document, navbarlinksActive)
 
   /**
-   * Scrolls to an element with header offset
+   * Rola para um elemento com deslocamento de cabeçalho
    */
   const scrollto = (el) => {
     let header = select('#header')
@@ -74,7 +74,7 @@
   }
 
   /**
-   * Toggle .header-scrolled class to #header when page is scrolled
+   * Alterne a classe .header-scrolled para #header quando a página for rolada
    */
   let selectHeader = select('#header')
   if (selectHeader) {
@@ -90,7 +90,7 @@
   }
 
   /**
-   * Back to top button
+   * Botão voltar ao topo
    */
   let backtotop = select('.back-to-top')
   if (backtotop) {
@@ -106,7 +106,7 @@
   }
 
   /**
-   * Mobile nav toggle
+   * Alternar navegação móvel
    */
   on('click', '.mobile-nav-toggle', function(e) {
     select('#navbar').classList.toggle('navbar-mobile')
@@ -115,7 +115,7 @@
   })
 
   /**
-   * Mobile nav dropdowns activate
+   * Os menus suspensos de navegação móvel são ativados
    */
   on('click', '.navbar .dropdown > a', function(e) {
     if (select('#navbar').classList.contains('navbar-mobile')) {
@@ -125,7 +125,7 @@
   }, true)
 
   /**
-   * Scrool with ofset on links with a class name .scrollto
+   * Scrool com deslocamento em links com nome de classe .scrollto
    */
   on('click', '.scrollto', function(e) {
     if (select(this.hash)) {
@@ -143,7 +143,7 @@
   }, true)
 
   /**
-   * Scroll with ofset on page load with hash links in the url
+   * Role com deslocamento no carregamento da página com links hash no URL
    */
   window.addEventListener('load', () => {
     if (window.location.hash) {
@@ -154,7 +154,7 @@
   });
 
   /**
-   * Preloader
+   * Pré-carregador
    */
   let preloader = select('#preloader');
   if (preloader) {
@@ -164,7 +164,7 @@
   }
 
   /**
-   * Hero carousel indicators
+   * Indicadores do carrossel 
    */
   let heroCarouselIndicators = select("#hero-carousel-indicators")
   let heroCarouselItems = select('#heroCarousel .carousel-item', true)
@@ -176,7 +176,7 @@
   });
 
   /**
-   * Porfolio isotope and filter
+   * Isótopo e filtro do portfólio
    */
   window.addEventListener('load', () => {
     let portfolioContainer = select('.portfolio-container');
@@ -204,14 +204,14 @@
   });
 
   /**
-   * Initiate portfolio lightbox 
+   * Iniciar lightbox de portfólio
    */
   const portfolioLightbox = GLightbox({
     selector: '.portfolio-lightbox'
   });
 
     /**
-     * Testimonials slider
+     * Controle deslizante de depoimentos
      */
     new Swiper('.testimonials-slider', {
         speed: 600,
@@ -229,7 +229,7 @@
     });
 
     /**
-     * Animation on scroll
+     * Animação na rolagem
      */
     window.addEventListener('load', () => {
         AOS.init({
@@ -241,7 +241,7 @@
     });
 
     /**
-     * Initiate Pure Counter 
+     * Iniciar contador 
      */
     new PureCounter();
 
