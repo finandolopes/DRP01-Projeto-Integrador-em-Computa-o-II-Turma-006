@@ -107,8 +107,8 @@ a:hover {
 }
 
 body {
-  background: #fff none repeat scroll 0 0;
-  color: #444;
+  background-color: #ffffff;
+  color: #333333; /* Texto escuro em fundo claro */  
   font-family: "Open Sans", sans-serif;
   font-size: 14px;
   text-align: left;
