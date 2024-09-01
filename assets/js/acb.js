@@ -2,6 +2,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const accessibilityBar = document.getElementById('accessibility-bar');
     const toggleButton = document.getElementById('accessibility-toggle');
     const icon = document.getElementById('toggle-icon');
+    const shortcutKeys = {
+        '1': 'btn-high-contrast',
+        '2': 'btn-dark-mode',
+        '3': 'btn-marker',
+        '4': 'btn-line-guide',
+        '5': 'btn-increase-font',
+        '6': 'btn-decrease-font',
+        '7': 'btn-reset',
+        '8': 'btn-vlibras'
+    };
 
     // Função para alternar a visibilidade da barra de acessibilidade
     toggleButton.addEventListener('click', function () {
@@ -13,6 +23,29 @@ document.addEventListener('DOMContentLoaded', function () {
         this.setAttribute('aria-expanded', isActive);
     });
 
+    // Função para adicionar a classe alt-pressed ao body ao pressionar Alt
+    document.addEventListener('keydown', function (event) {
+        if (event.altKey) {
+            document.body.classList.add('alt-pressed');
+        }
+    });
+
+    // Função para remover a classe alt-pressed do body ao soltar Alt
+    document.addEventListener('keyup', function (event) {
+        if (!event.altKey) {
+            document.body.classList.remove('alt-pressed');
+        }
+    });
+
+    // Função para executar o atalho correspondente ao pressionar Alt + número
+    document.addEventListener('keydown', function (event) {
+        if (event.altKey && shortcutKeys[event.key]) {
+            event.preventDefault(); // Previne ações padrão
+            document.getElementById(shortcutKeys[event.key]).click();
+        }
+    });
+
+    // Funções de controle de acessibilidade
     document.getElementById('btn-high-contrast').addEventListener('click', function () {
         toggleButtonState('btn-high-contrast', 'high-contrast');
     });
@@ -51,7 +84,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('btn-vlibras').addEventListener('click', function () {
         const vlibrasContainer = document.getElementById('vlibras-container');
 
-        // Verifica se o VLibras já foi carregado
         if (!vlibrasContainer.hasChildNodes()) {
             const script = document.createElement('script');
             script.src = "https://vlibras.gov.br/app/vlibras-plugin.js";
@@ -59,14 +91,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 new window.VLibras.Widget('https://vlibras.gov.br/app', vlibrasContainer);
             };
             vlibrasContainer.appendChild(script);
+            vlibrasContainer.style.display = 'block';
         } else {
-            // Alterna a visibilidade do VLibras
             vlibrasContainer.classList.toggle('hidden');
         }
     });
 
     function adjustFontSize(step) {
-        const elements = document.querySelectorAll('body, body *');
+        const elements = document.querySelectorAll('body, body *:not(script):not(style)');
         elements.forEach(function (el) {
             const currentSize = window.getComputedStyle(el).getPropertyValue('font-size');
             const newSize = parseFloat(currentSize) + step;
@@ -75,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function resetFontSize() {
-        const elements = document.querySelectorAll('body, body *');
+        const elements = document.querySelectorAll('body, body *:not(script):not(style)');
         elements.forEach(function (el) {
             el.style.fontSize = '';
         });
@@ -119,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
         clearMarker();
         const element = event.target;
 
-        if (element.nodeType === Node.TEXT_NODE || element.childNodes.length > 0) {
+        if (element.nodeType === Node.ELEMENT_NODE && element.tagName.match(/^(P|SPAN|LI|H[1-6])$/i)) {
             element.classList.add('marker-active');
         }
     }

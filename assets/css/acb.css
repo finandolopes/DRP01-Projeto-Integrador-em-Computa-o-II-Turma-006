@@ -280,3 +280,66 @@ body.darkmode img:hover {
 #line-guide {
     pointer-events: none;
 }
+
+/* Adicionar dicas de teclas (números) */
+.accessibility-btn .shortcut {
+    display: none;
+    position: absolute;
+    top: -25px;
+    right: -15px;
+    background: #444;
+    color: #fff;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 12px;
+    z-index: 1000;
+}
+
+/* Mostrar dicas de teclas ao pressionar Alt */
+body.alt-pressed .shortcut {
+    display: block;
+}
+
+/* Botões de Acessibilidade com dicas de teclas */
+#btn-high-contrast::before {
+    content: "Alt+1";
+}
+#btn-dark-mode::before {
+    content: "Alt+2";
+}
+#btn-marker::before {
+    content: "Alt+3";
+}
+#btn-line-guide::before {
+    content: "Alt+4";
+}
+#btn-increase-font::before {
+    content: "Alt+5";
+}
+#btn-decrease-font::before {
+    content: "Alt+6";
+}
+#btn-reset::before {
+    content: "Alt+7";
+}
+#btn-vlibras::before {
+    content: "Alt+8";
+}
+
+/* Estilo das dicas de teclas */
+.accessibility-btn::before {
+    display: none;
+    position: absolute;
+    top: -25px;
+    right: -10px;
+    background: #000;
+    color: #fff;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 12px;
+    z-index: 1000;
+}
+
+body.alt-pressed .accessibility-btn::before {
+    display: block;
+}
