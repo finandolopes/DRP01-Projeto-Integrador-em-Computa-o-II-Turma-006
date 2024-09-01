@@ -23,6 +23,8 @@
     <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
     <link href="lib/nivo-slider/css/nivo-slider.min.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
+    <link href="assets/css/acb.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
     <!-- Scripts Necessários -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
@@ -87,13 +89,33 @@
 </head>
 <!-- Inicio Menu Flutuante E-mail e Redes Sociais -->
 <div class="floating-buttons">
-    <a href="https://www.instagram.com/confintersp?igsh=a3NuaGJrem5pYzZu" target="_blank" class="instagram"><i class="bi bi-instagram"></i></a>
-    <a href="https://api.whatsapp.com/send?phone=11948016298" target="_blank" class="whatsapp"><i class="bi bi-whatsapp"></i></a>
-    <a href="mailto:contato@confinter.com.br" class="email"><i class="bi bi-envelope-at"></i></i></a>
+    <a href="https://www.instagram.com/confintersp?igsh=a3NuaGJrem5pYzZu" target="_blank" class="instagram" title="Instagram"><i class="bi bi-instagram"></i></a>
+    <a href="https://api.whatsapp.com/send?phone=11948016298" target="_blank" class="whatsapp"><i class="bi bi-whatsapp" title="WhatsApp"></i></a>
+    <a href="mailto:contato@confinter.com.br" class="email"><i class="bi bi-envelope-at" title="E-mail"></i></i></a>
 </div>
 <!-- Fim do Menu Flutuante E-mail e Redes Sociais -->
 <body>
+<!-- Inclusão do VLibras -->
+<div id="vlibras-container"></div>
 
+<!-- Barra Lateral de Acessibilidade --> 
+<div id="accessibility-bar" class="accessibility-bar hidden">
+    <button id="accessibility-toggle" class="accessibility-toggle" title="Barra de Acessibilidade">
+        <i id="toggle-icon" class="bi bi-universal-access"></i>
+    </button>
+    <button id="btn-high-contrast" class="accessibility-btn" title="Alto Contraste"><i class="fas fa-adjust"></i></button>
+    <button id="btn-dark-mode" class="accessibility-btn" title="Modo Escuro"><i class="bi bi-moon"></i></button>
+    <button id="btn-increase-font" class="accessibility-btn" title="Aumentar Fonte"><i class="bi bi-zoom-in"></i></button>
+    <button id="btn-decrease-font" class="accessibility-btn" title="Diminuir Fonte"><i class="bi bi-zoom-out"></i></button>
+    <button id="btn-marker" class="accessibility-btn" title="Marcador"><i class="bi bi-bookmark"></i></button>
+    <button id="btn-line-guide" class="accessibility-btn" title="Linha Guia"><i class="bi bi-arrows-collapse"></i></button>
+    <button id="btn-reset" class="accessibility-btn" title="Redefinir"><i class="bi bi-arrow-counterclockwise"></i></button>
+    <button id="btn-vlibras" class="accessibility-btn" title="Ativar VLibras">
+        <i class="fas fa-handshake"></i>
+    </button>
+    <div id="vlibras-container"></div>
+</div>
+<!-- Fim da Barra Lateral de Acessibilidade -->
     <!-- Início do Header -->
     <header id="header" class="fixed-top">
         <div class="container d-flex align-items-center justify-content-between">
@@ -653,23 +675,7 @@
             </div>           
         </div>
     </footer>
-    <!-- Fim do Footer -->
-
-    <!-- Plugin V-Libras -->
-    <div vw class="enabled">
-        <div vw-access-button class="active">
-            <img class="access-button" src="/assets/img/V-Libras/Plug-in/component-ac.png" alt="Conteúdo acessível em libras usando o VLibras Widget">
-            <img class="pop-up" src="/assets/img/V-Libras/Plug-in/popup.png" alt="Conteúdo acessível em libras usando o VLibras Widget">
-        </div>
-        <div vw-plugin-wrapper>
-            <div class="vw-plugin-top-wrapper"></div>
-        </div>
-    </div>
-    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-    <script>
-        new window.VLibras.Widget('https://vlibras.gov.br/app');
-    </script>
-    <!-- Fim do Plugin V-Libras -->
+    <!-- Fim do Footer -->  
 
     <!-- Elementos adicionais -->
     <div id="preloader"></div>
@@ -696,6 +702,29 @@
             $('#ensign-nivoslider').nivoSlider();
         });
     </script>
+
+<script src="assets/js/acb.js"></script>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+    // Função para iniciar o VLibras dentro da barra lateral
+    document.getElementById('btn-vlibras').addEventListener('click', function () {
+        const vlibrasContainer = document.getElementById('vlibras-container');
+
+        // Verifica se o VLibras já foi carregado
+        if (!vlibrasContainer.hasChildNodes()) {
+            const script = document.createElement('script');
+            script.src = "https://vlibras.gov.br/app/vlibras-plugin.js";
+            script.onload = function() {
+                new window.VLibras.Widget('https://vlibras.gov.br/app', vlibrasContainer);
+            };
+            vlibrasContainer.appendChild(script);
+        } else {
+            // Alterna a visibilidade do VLibras
+            vlibrasContainer.classList.toggle('hidden');
+        }
+    });
+</script>
+<!-- Fim do VLibras -->
 
 </body>
 </html> 
