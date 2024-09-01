@@ -86,7 +86,11 @@
             $('#telefone').mask('(00) 00000-0000');
         });
     </script>
-</head>
+<style>
+.accessibility-btn:focus {
+    outline: 2px solid #000;
+}
+</style></head>
 <!-- Inicio Menu Flutuante E-mail e Redes Sociais -->
 <div class="floating-buttons">
     <a href="https://www.instagram.com/confintersp?igsh=a3NuaGJrem5pYzZu" target="_blank" class="instagram" title="Instagram"><i class="bi bi-instagram"></i></a>
@@ -95,32 +99,33 @@
 </div>
 <!-- Fim do Menu Flutuante E-mail e Redes Sociais -->
 <body>
-<!-- Inclusão do VLibras -->
-<div id="vlibras-container"></div>
 
 <!-- Barra Lateral de Acessibilidade --> 
 <div id="accessibility-bar" class="accessibility-bar hidden">
     <button id="accessibility-toggle" class="accessibility-toggle" title="Barra de Acessibilidade">
         <i id="toggle-icon" class="bi bi-universal-access-circle"></i>
     </button>
-    <button id="btn-high-contrast" class="accessibility-btn" title="Alto Contraste"><i class="fa fa-low-vision"></i></button>
-    <button id="btn-dark-mode" class="accessibility-btn" title="Modo Escuro"><i class="bi bi-moon"></i></button>
-    <button id="btn-increase-font" class="accessibility-btn" title="Aumentar Fonte"><i class="bi bi-zoom-in"></i></button>
-    <button id="btn-decrease-font" class="accessibility-btn" title="Diminuir Fonte"><i class="bi bi-zoom-out"></i></button>
-    <button id="btn-marker" class="accessibility-btn" title="Marcador"><i class="fa-solid fa-highlighter"></i></button>
-    <button id="btn-line-guide" class="accessibility-btn" title="Linha Guia"><i class="bi bi-arrows-collapse"></i></button>
-    <button id="btn-reset" class="accessibility-btn" title="Redefinir"><i class="bi bi-arrow-counterclockwise"></i></button>
-    <button id="btn-vlibras" class="accessibility-btn" title="Ativar VLibras">
+    <button id="btn-high-contrast" aria-label="Ativar alto contraste" class="accessibility-btn" title="Alto Contraste"><i class="fa fa-low-vision"></i></button>
+    <button id="btn-dark-mode" aria-label="Ativar modo escuro" class="accessibility-btn" title="Modo Escuro"><i class="bi bi-moon"></i></button>
+    <button id="btn-increase-font" aria-label="Aumentar fonte" class="accessibility-btn" title="Aumentar Fonte"><i class="bi bi-zoom-in"></i></button>
+    <button id="btn-decrease-font" aria-label="Diminuir fonte" class="accessibility-btn" title="Diminuir Fonte"><i class="bi bi-zoom-out"></i></button>
+    <button id="btn-marker" aria-label="Ativar marcador" class="accessibility-btn" title="Marcador"><i class="fa-solid fa-highlighter"></i></button>
+    <button id="btn-line-guide" aria-label="Ativar linha guia" class="accessibility-btn" title="Linha Guia"><i class="bi bi-arrows-collapse"></i></button>
+    <button id="btn-reset" aria-label="Redefinir configurações" class="accessibility-btn" title="Redefinir"><i class="bi bi-arrow-counterclockwise"></i></button>
+    <button id="btn-vlibras" aria-label="Ativar VLibras" class="accessibility-btn" title="Ativar VLibras">
         <i class="fa fa-american-sign-language-interpreting"></i>
     </button>
     <div id="vlibras-container"></div>
+    <button id="btn-text-reader" aria-label="Ativar leitura de texto" class="accessibility-btn" title="Leitura de Texto">
+        <i class="fa fa-headphones"></i>
+    </button>
 </div>
 <!-- Fim da Barra Lateral de Acessibilidade -->
     <!-- Início do Header -->
     <header id="header" class="fixed-top">
         <div class="container d-flex align-items-center justify-content-between">
             <a href="index.html" class="logo">
-                <img src="assets/img/logo.png" alt="Logo da CONFINTER" class="img-fluid">
+                <img src="assets/img/logo.png" alt="Logo da CONFINTER" alt="Logo da CONFINTER" class="img-fluid">
             </a>
             <nav id="navbar" class="navbar" aria-label="Menu principal">
                 <ul>
@@ -656,8 +661,9 @@
                     </div>
                     <div class="col-lg-3 col-md-6 footer-links">                        
                         <div class="social-links mt-3">
-                            <a href="https://www.instagram.com/confintersp?igsh=a3NuaGJrem5pYzZu" class="instagram"><i class="bx bxl-instagram" title="Instagram"></i></a>
-                            <a href="https://api.whatsapp.com/send?phone=11948016298" class="whatsapp" ><i class="bx bxl-whatsapp" title="WhatsApp"></i></a>                            
+                            <a href="https://www.instagram.com/confintersp?igsh=a3NuaGJrem5pYzZu" class="instagram"><i class="bx bxl-instagram"></i></a>
+                            <a href="https://api.whatsapp.com/send?phone=11948016298" class="whatsapp"><i class="bx bxl-whatsapp"></i></a>
+                            <a href="mailto:contato@confinter.com.br" class="email"><i class="bx bx-envelope"></i></a>
                         </div>
                     </div>
                 </div>
@@ -703,27 +709,6 @@
     </script>
 
 <script src="assets/js/acb.js"></script>
-<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-<script>
-    // Função para iniciar o VLibras dentro da barra lateral
-    document.getElementById('btn-vlibras').addEventListener('click', function () {
-        const vlibrasContainer = document.getElementById('vlibras-container');
-
-        // Verifica se o VLibras já foi carregado
-        if (!vlibrasContainer.hasChildNodes()) {
-            const script = document.createElement('script');
-            script.src = "https://vlibras.gov.br/app/vlibras-plugin.js";
-            script.onload = function() {
-                new window.VLibras.Widget('https://vlibras.gov.br/app', vlibrasContainer);
-            };
-            vlibrasContainer.appendChild(script);
-        } else {
-            // Alterna a visibilidade do VLibras
-            vlibrasContainer.classList.toggle('hidden');
-        }
-    });
-</script>
-<!-- Fim do VLibras -->
 
 </body>
 </html> 
