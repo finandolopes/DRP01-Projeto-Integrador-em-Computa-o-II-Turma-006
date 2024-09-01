@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const isActive = accessibilityBar.classList.contains('active');
 
         icon.classList.toggle('bi-chevron-left', isActive);
-        icon.classList.toggle('bi-universal-access', !isActive);
+        icon.classList.toggle('bi bi-universal-access-circle', !isActive);
         this.setAttribute('aria-expanded', isActive);
     });
 
