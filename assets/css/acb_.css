@@ -182,7 +182,7 @@
     width: 100%;
     height: auto;
     margin-top: 10px;
-    display: none; /* Inicialmente escondido */
+    display: none;
     transition: all 0.3s ease-in-out;
 }
 
@@ -281,14 +281,44 @@ body.darkmode img:hover {
     pointer-events: none;
 }
 
-/* Modificar o estilo das dicas de teclas para que apareçam dentro dos botões */
-.accessibility-btn .shortcut {
+/* Mostrar dicas de teclas ao pressionar Alt */
+body.alt-pressed .shortcut {
+    display: block;
+}
+
+/* Botões de Acessibilidade com dicas de teclas */
+#btn-high-contrast::before {
+    content: "Alt+1";
+}
+#btn-dark-mode::before {
+    content: "Alt+2";
+}
+#btn-marker::before {
+    content: "Alt+3";
+}
+#btn-line-guide::before {
+    content: "Alt+4";
+}
+#btn-increase-font::before {
+    content: "Alt+5";
+}
+#btn-decrease-font::before {
+    content: "Alt+6";
+}
+#btn-reset::before {
+    content: "Alt+7";
+}
+#btn-vlibras::before {
+    content: "Alt+8";
+}
+
+/* Estilo das dicas de teclas */
+.accessibility-btn::before {
     display: none;
-    position: absolute;
-    top: 50%; /* Centralizar verticalmente */
-    left: 50%; /* Centralizar horizontalmente */
-    transform: translate(-50%, -50%); /* Ajuste para centralizar */
-    background: rgba(0, 0, 0, 0.7);
+    position: sticky;
+    top: -25px;
+    right: -10px;
+    background: #000;
     color: #fff;
     padding: 2px 5px;
     border-radius: 3px;
@@ -296,63 +326,6 @@ body.darkmode img:hover {
     z-index: 1000;
 }
 
-/* Mostrar dicas de teclas ao pressionar Alt */
-body.alt-pressed .shortcut {
+body.alt-pressed .accessibility-btn::before {
     display: block;
 }
-
-/* Botões de Acessibilidade com dicas de teclas */
-#btn-high-contrast .shortcut::before {
-    content: "1";
-}
-#btn-dark-mode .shortcut::before {
-    content: "2";
-}
-#btn-marker .shortcut::before {
-    content: "3";
-}
-#btn-line-guide .shortcut::before {
-    content: "4";
-}
-#btn-increase-font .shortcut::before {
-    content: "5";
-}
-#btn-decrease-font .shortcut::before {
-    content: "6";
-}
-#btn-reset .shortcut::before {
-    content: "7";
-}
-#btn-vlibras .shortcut::before {
-    content: "8";
-}
-
-/* Estilo das dicas de teclas */
-.accessibility-btn .shortcut::before {
-    display: block;
-}
-/* Botão de Leitura de Texto */
-#btn-text-reader {
-    background: #444;
-    color: #fff;
-    border: none;
-    padding: 10px;
-    margin: 5px 0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 50px;
-    width: 50px;
-    transition: background 0.3s;
-}
-
-#btn-text-reader:hover {
-    background: #555;
-}
-
-#btn-text-reader.active {
-    background-color: #1c54ed;
-    color: #fff;
-}
-
