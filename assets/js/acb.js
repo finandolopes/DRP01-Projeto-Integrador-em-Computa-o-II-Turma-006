@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Funções de acessibilidade
     document.getElementById('btn-high-contrast').addEventListener('click', function () {
         document.body.classList.toggle('high-contrast');
+        this.classList.toggle('active');  // Adiciona ou remove a classe 'active'
     });
 
     document.getElementById('btn-increase-font').addEventListener('click', function () {
@@ -46,37 +47,41 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     document.getElementById('btn-gray-scale').addEventListener('click', function () {
-        document.body.classList.toggle('grayscale');
+        document.body.classList.toggle('grayscale');        
     });
 
     document.getElementById('btn-negative-contrast').addEventListener('click', function () {
         document.body.classList.toggle('negative-contrast');
+        this.classList.toggle('active');  // Adiciona ou remove a classe 'active'
     });
 
     document.getElementById('btn-underlined-links').addEventListener('click', function () {
         toggleLinkUnderline();
+        this.classList.toggle('active');  // Adiciona ou remove a classe 'active'
     });
 
     document.getElementById('btn-readable-font').addEventListener('click', function () {
         document.body.classList.toggle('readable-font');
+        this.classList.toggle('active');  // Adiciona ou remove a classe 'active'
     });
 
     document.getElementById('btn-reset').addEventListener('click', function () {
         document.body.classList.remove('high-contrast', 'darkmode', 'grayscale', 'negative-contrast', 'readable-font');
         resetFontSize();
-        removeLinkUnderline();
+        removeLinkUnderline();        
     });
 
     document.getElementById('btn-dark-mode').addEventListener('click', function () {
         document.body.classList.toggle('darkmode'); // Corrigido
+        this.classList.toggle('active');  // Adiciona ou remove a classe 'active'
     });
 
     document.getElementById('btn-marker').addEventListener('click', function () {
-        toggleMarker();
+        toggleMarker();        
     });
 
     document.getElementById('btn-line-guide').addEventListener('click', function () {
-        toggleLineGuide();
+        toggleLineGuide();        
     });
 
     document.getElementById('btn-text-reader').addEventListener('click', function () {
@@ -84,6 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const speech = new SpeechSynthesisUtterance(text);
         speech.lang = 'pt-BR'; // Configura para português
         window.speechSynthesis.speak(speech);
+        this.classList.toggle('active');  // Adiciona ou remove a classe 'active'
     });
 
     function adjustFontSize(step) {
