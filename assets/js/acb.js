@@ -47,7 +47,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     document.getElementById('btn-gray-scale').addEventListener('click', function () {
-        document.body.classList.toggle('grayscale');        
+        document.body.classList.toggle('grayscale');
+        this.classList.toggle('active');  // Adiciona ou remove a classe 'active'
     });
 
     document.getElementById('btn-negative-contrast').addEventListener('click', function () {
