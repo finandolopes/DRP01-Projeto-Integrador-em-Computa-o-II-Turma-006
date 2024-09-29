@@ -98,7 +98,7 @@ function adjustFontSize(step) {
     elements.forEach(function (el) {
         const currentSize = parseFloat(window.getComputedStyle(el).getPropertyValue('font-size'));
         const newSize = currentSize + step * 0.1; // Ajustar o passo conforme necessário
-        el.style.fontSize = newSize + 'em';
+        el.style.fontSize = newSize + 'px';
     });
 }
 
