@@ -47,8 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     document.getElementById('btn-gray-scale').addEventListener('click', function () {
-        document.body.classList.toggle('grayscale');
-        this.classList.toggle('active');  // Adiciona ou remove a classe 'active'
+        document.body.classList.toggle('grayscale');        
     });
 
     document.getElementById('btn-negative-contrast').addEventListener('click', function () {
@@ -93,14 +92,14 @@ document.addEventListener('DOMContentLoaded', function () {
         this.classList.toggle('active');  // Adiciona ou remove a classe 'active'
     });
 
-function adjustFontSize(step) {
-    const elements = document.querySelectorAll('body, body *:not(script):not(style)');
-    elements.forEach(function (el) {
-        const currentSize = parseFloat(window.getComputedStyle(el).getPropertyValue('font-size'));
-        const newSize = currentSize + step * 0.1; // Ajustar o passo conforme necessário
-        el.style.fontSize = newSize + 'px';
-    });
-}
+    function adjustFontSize(step) {
+        const elements = document.querySelectorAll('body, body *:not(script):not(style)');
+        elements.forEach(function (el) {
+            const currentSize = window.getComputedStyle(el).getPropertyValue('font-size');
+            const newSize = parseFloat(currentSize) + step;
+            el.style.fontSize = newSize + 'px';
+        });
+    }
 
     function resetFontSize() {
         const elements = document.querySelectorAll('body, body *:not(script):not(style)');
@@ -145,7 +144,6 @@ function applyMarker(event) {
     clearMarker();
     const element = event.target;
 
-    // Valida se o elemento é seguro para manipulação
     if (element.nodeType === Node.ELEMENT_NODE && element.tagName.match(/^(P|SPAN|LI|H[1-6])$/i)) {
         element.classList.add('marker-active');
     }
