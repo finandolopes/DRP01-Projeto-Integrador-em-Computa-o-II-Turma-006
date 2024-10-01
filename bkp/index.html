@@ -23,7 +23,7 @@
     <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
     <link href="lib/nivo-slider/css/nivo-slider.min.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
-    <link href="assets/css/acb.css" rel="stylesheet">
+    <link href="acb.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
     <!-- Scripts Necessários -->
@@ -105,38 +105,20 @@
     <button id="accessibility-toggle" class="accessibility-toggle" title="Barra de Acessibilidade">
         <i id="toggle-icon" class="bi bi-universal-access-circle"></i>
     </button>
-    <button id="btn-blind" class="accessibility-btn" title="Perfil Cego">
-        <i class="fas fa-blind"></i>
-    </button>
-    <button id="btn-eye-low-vision" class="accessibility-btn" title="Baixa Visão">
-        <i class="fas fa-eye"></i>
-    </button>
-    <button id="btn-daltonismo" class="accessibility-btn" title="Daltonismo">
-        <i class="fas fa-eye-dropper"></i>
-    </button>
-    <button id="btn-epilepsia" class="accessibility-btn" title="Epilepsia">
-        <i class="fas fa-ban"></i>
-    </button>
-    <button id="btn-tdah" class="accessibility-btn" title="TDAH">
-        <i class="fas fa-brain"></i>
-    </button>
-    <button id="btn-dislexia" class="accessibility-btn" title="Dislexia">
-        <i class="fas fa-book"></i>
-    </button>
+    <button id="btn-blind" aria-label="Perfil Cego" class="accessibility-btn" title="Perfil Cego"><i class="fas fa-blind"></i></button>
+    <button id="btn-eye-low-vision" aria-label="Baixa Visão" class="accessibility-btn" title="Baixa Visão"><i class="fas fa-eye"></i></button>
+    <button id="btn-daltonismo" aria-label="Daltonismo" class="accessibility-btn" title="Daltonismo"><i class="fas fa-eye-dropper"></i></button>
+    <button id="btn-epilepsia" aria-label="Epilepsia" class="accessibility-btn" title="Epilepsia"><i class="fas fa-ban"></i></button>
+    <button id="btn-tdah" aria-label="TDAH" class="accessibility-btn" title="TDAH"><i class="fas fa-brain"></i></button>
+    <button id="btn-dislexia" aria-label="Dislexia" class="accessibility-btn" title="Dislexia"><i class="fas fa-book"></i></button>
     <button id="btn-high-contrast" aria-label="Ativar alto contraste" class="accessibility-btn" title="Alto Contraste"><i class="fa fa-low-vision"></i></button>
     <button id="btn-dark-mode" aria-label="Ativar modo escuro" class="accessibility-btn" title="Modo Escuro"><i class="bi bi-moon"></i></button>
     <button id="btn-increase-font" aria-label="Aumentar fonte" class="accessibility-btn" title="Aumentar Fonte"><i class="bi bi-zoom-in"></i></button>
     <button id="btn-decrease-font" aria-label="Diminuir fonte" class="accessibility-btn" title="Diminuir Fonte"><i class="bi bi-zoom-out"></i></button>
     <button id="btn-marker" aria-label="Ativar marcador" class="accessibility-btn" title="Marcador"><i class="fa-solid fa-highlighter"></i></button>
     <button id="btn-line-guide" aria-label="Ativar linha guia" class="accessibility-btn" title="Linha Guia"><i class="bi bi-arrows-collapse"></i></button>
-    <button id="btn-reset" aria-label="Redefinir configurações" class="accessibility-btn" title="Redefinir"><i class="bi bi-arrow-counterclockwise"></i></button>
-    <button id="btn-vlibras" aria-label="Ativar VLibras" class="accessibility-btn" title="Ativar VLibras">
-        <i class="fa fa-american-sign-language-interpreting"></i>
-    </button>
-    <div id="vlibras-container"></div>
-    <button id="btn-text-reader" aria-label="Ativar leitura de texto" class="accessibility-btn" title="Leitura de Texto">
-        <i class="fa fa-headphones"></i>
-    </button>
+    <button id="btn-text-reader" aria-label="Ativar leitura de texto" class="accessibility-btn" title="Leitura de Texto"><i class="fa fa-headphones"></i></button>
+    <button id="btn-reset" aria-label="Redefinir configurações" class="accessibility-btn" title="Redefinir"><i class="bi bi-arrow-counterclockwise"></i></button>       
 </div>
 <!-- Fim da Barra Lateral de Acessibilidade -->
     <!-- Início do Header -->
@@ -726,7 +708,7 @@
         });
     </script>
 
-<script src="assets/js/acb.js"></script>
+<script src="acb.js"></script>
 
 </body>
 </html> 

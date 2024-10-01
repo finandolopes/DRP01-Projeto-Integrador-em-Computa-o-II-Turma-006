@@ -1,117 +1,70 @@
-/* Barra de Acessibilidade */
-.accessibility-bar {
+/* Barra de acessibilidade */
+#accessibility-toolbar {
     position: fixed;
-    top: 50%;
     right: 0;
-    transform: translate(100%, -50%);
-    background-color: rgba(34, 34, 34, 0.75);
-    border-radius: 0.5rem 0 0 0.5rem;
-    box-shadow: 0 5px 30px rgba(34, 34, 34, 0);
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    transition: all 0.5s ease-in-out;
-}
-
-.accessibility-bar.active {
-    transform: translate(0, -50%);
-    box-shadow: 0 5px 30px rgba(34, 34, 34, 0.5);
-}
-
-.accessibility-bar * {
-    box-sizing: border-box;
-}
-
-/* Botão de Ocultar/Mostrar */
-.accessibility-toggle {
-    position: absolute;
-    top: 50%;
-    left: -35px;
-    transform: translate(-110%, -50%);
-    background-color: #1c54ed;
+    top: 70px;
+    background-color: #333;
     color: #fff;
-    border: none;
-    border-radius: 50%;
+    z-index: 1000;
     padding: 10px;
-    width: 3rem;
-    height: 3rem;
+    border-radius: 8px 0 0 8px;
+    width: 50px;
+    height: 50px; /* Exibir apenas o ícone */
+    overflow: hidden; /* Ocultar o conteúdo adicional */
+    transition: all 0.3s ease;
+}
+
+#accessibility-toolbar.expanded {
+    width: 250px;
+    height: auto; /* Expandir conforme necessário */
+}
+
+.toolbar-toggle {
     cursor: pointer;
+    padding: 5px;
+    font-size: 24px;
+    background-color: #007BFF;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.accessibility-toolbar-items {
+    display: none;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+}
+
+#accessibility-toolbar.expanded .accessibility-toolbar-items {
+    display: grid;
+}
+
+.accessibility-toolbar-items button {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 30px;
-    transition: all 0.3s ease-in-out;
-}
-
-.accessibility-toggle:hover {
-    background: #555;
-}
-
-.accessibility-toggle i {
-    font-size: 22px;
-    line-height: 1;
-}
-
-.accessibility-toggle span {
-    font-size: 16px;
-    font-weight: bold;
-    color: #fff;
-    background-color: #1c54ed;
-    box-shadow: 0 10px 30px rgba(102, 102, 102, 0.1);
-    padding: 0 1rem;
-    border-radius: 0.25rem;
-    display: flex;
-    align-items: center;
-    position: absolute;
-    top: 50%;
-    right: 120%;
-    transform: translateY(-50%);
-    transition: all 0.3s ease-in-out;
-}
-
-.accessibility-toggle.collapsed span {
-    opacity: 0;
-    right: 50%;
-}
-
-/* Botões de Acessibilidade */
-.accessibility-btn {
-    background: #444;
-    color: #fff;
+    background-color: #444;
+    color: white;
     border: none;
     padding: 10px;
     margin: 5px 0;
     cursor: pointer;
-    border-radius: 0.25rem;
-    transition: background 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 30px;
-    width: 30px;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
 }
 
-.accessibility-btn:hover {
-    background-color: #fff;
-}
-
-.accessibility-btn strong {
-    color: #fff;
+.accessibility-toolbar-items button.active {
     background-color: #1c54ed;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 0.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 0.25rem;
+    color: white;
 }
 
-.accessibility-btn i {
-    font-size: 20px;
-    line-height: 1;
+.accessibility-toolbar-items i {
+    font-size: 18px;
 }
+
 /* Tooltip */
 .accessibility-btn[aria-label]:hover::after {
     content: attr(aria-label);
@@ -125,6 +78,39 @@
     right: 100%;
     white-space: nowrap;
 }
+
+/* Ícones de acessibilidade menores */
+.accessibility-btn i {
+    font-size: 16px;
+}
+
+/* Responsividade para dispositivos móveis */
+@media (max-width: 768px) {
+  #header {
+      position: fixed;
+      width: 100%;
+      top: 0;
+  }
+
+  /* Ajustes para o menu */
+  .navbar {
+      display: none;
+  }
+
+  .mobile-nav-toggle {
+      display: block;
+  }
+
+  #accessibility-toolbar {
+      width: 40px;
+      height: 40px; /* Reduzir o ícone da barra de acessibilidade */
+  }
+
+  #accessibility-toolbar.expanded {
+      width: 200px;
+  }
+}
+
 /* Estilo para alto contraste */
 body.high-contrast {
     background-color: #000;
@@ -1612,7 +1598,46 @@ body.high-contrast {
   }
   .visible-desktop {
     display: inherit !important;
-  }  
+  }
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .hidden-desktop {
+      display: inherit !important;
+    }
+    .visible-desktop {
+      display: none !important ;
+    }
+    .visible-tablet {
+      display: inherit !important;
+    }
+    .hidden-tablet {
+      display: none !important;
+    }
+  }
+  @media (max-width: 767px) {
+    .hidden-desktop {
+      display: inherit !important;
+    }
+    .visible-desktop {
+      display: none !important;
+    }
+    .visible-phone {
+      display: inherit !important;
+    }
+    /* Use inherit to restore previous behavior */
+    .hidden-phone {
+      display: none !important;
+    }
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
   /* Daltonismo - Alta Saturação e Contraste */
   body.high-saturation {
     filter: saturate(2);
@@ -1646,6 +1671,37 @@ body.high-contrast {
   body.underline-links h3 {
     text-decoration: underline !important;
   }
+  /* Para Alto Contraste */
+body.high-contrast input[type="checkbox"]:checked + label {
+  background-color: yellow !important;
+  border: 2px solid yellow !important;
+  color: black !important;
+}
 
+/* Para Contraste Negativo */
+body.negative-contrast input[type="checkbox"]:checked + label {
+  background-color: yellow !important;
+  border: 2px solid yellow !important;
+  color: black !important;
+}
 
-  
+/* Botões de acessibilidade ativos */
+.accessibility-btn.active {
+  background-color: yellow !important;
+  color: black !important;
+  border: 2px solid black !important;
+}
+
+/* Estilos gerais */
+body {
+  background-color: #fff;
+  color: #333;
+  font-family: Arial, sans-serif;
+}
+
+/* Botões de acessibilidade */
+.accessibility-btn.active {
+  background-color: yellow !important;
+  color: black !important;
+  border: 2px solid black !important;
+}
