@@ -146,11 +146,19 @@ body.high-contrast {
   a.underline {
       text-decoration: underline;
   }
+
+  .darkmode .darkmode-white-text {
+    color: #ffffff;
+  }
+
+  .darkmode h2 {
+    color: #ffffff;
+  }
   
   /* Modo Escuro */
   body.darkmode {
     background: #121212 !important;
-    color: #655b5b !important;
+    color: #655b5b;
   }
   
   body.darkmode img {
@@ -252,10 +260,6 @@ body.high-contrast {
   body.alt-pressed .accessibility-btn::before {
     display: block;
   }
-  .dark-mode {
-    background-color: #121212;
-    color: #ffffff;
-  }
   
   /* Linhas de Leitura e Marcador */
   .marker * {
@@ -285,7 +289,7 @@ body.high-contrast {
   }
   body.darkmode {
     background: #121212 !important;
-    color: #655b5b !important;
+    color: #655b5b;
   }
   body.grayscale {
     filter: grayscale(100%);

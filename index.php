@@ -417,7 +417,7 @@ if (isset($_SESSION['sucesso_depoimento']) && $_SESSION['sucesso_depoimento']) {
         <section id="sobre" class="about">
             <div class="container" data-aos="fade-up">
 
-                <div class="section-headline text-center">
+                <div class="section-headline text-center change-darkmode-color">
                     <h2 class="br">Sobre Nós</h2>
                     <div class="row">
                         <div class="col-md-12 col-sm-12 col-xs-12">
