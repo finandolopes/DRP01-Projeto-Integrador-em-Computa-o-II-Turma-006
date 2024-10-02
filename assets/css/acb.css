@@ -23,7 +23,7 @@
     cursor: pointer;
     padding: 5px;
     font-size: 24px;
-    background-color: #007BFF;
+    /* background-color: #007BFF; */
     color: white;
     border-radius: 50%;
     display: flex;
@@ -44,7 +44,7 @@
 .accessibility-toolbar-items button {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
     background-color: #444;
     color: white;
     border: none;
@@ -107,7 +107,7 @@
   }
 
   #accessibility-toolbar.expanded {
-      width: 200px;
+      width: 100%;
   }
 }
 
