@@ -166,62 +166,62 @@
 </div>
 <!-- Fim da Barra Lateral de Acessibilidade -->
 
- <!-- Início do Header -->
-<header id="header" class="fixed-top">
-    <div class="container d-flex align-items-center justify-content-between">
-        <a href="index.html" class="logo">
-            <img src="assets/img/logo.png" alt="Logo da CONFINTER" class="img-fluid">
-        </a>
-        <nav id="navbar" class="navbar" aria-label="Menu principal">
-            <ul>
-                <li><a class="nav-link scrollto active" href="#sobre">Sobre</a></li>
-                <li><a class="nav-link scrollto" href="#valores">Nossos Valores</a></li>
-                <li><a class="nav-link scrollto" href="#servicos">Serviços</a></li>
-                <li><a class="nav-link scrollto" href="#requi">Requisições</a></li>
-                <li><a class="nav-link scrollto" href="#faq">Dúvidas</a></li>
-                <li><a class="nav-link scrollto" href="#depoimentos">Depoimentos</a></li>
-                <li><a class="nav-link scrollto" href="#chegar">Como Chegar</a></li>
-                <li><a href="#" data-toggle="modal" data-target="#loginModal">Login</a></li>
-            </ul>
-            <button class="mobile-nav-toggle" aria-label="Abrir menu">
-                <i class="bi bi-list"></i>
-            </button>
-        </nav>
-    </div>
-</header>
-<!-- Fim do Header -->
+  <!-- ======= Inicio Header ======= -->
+    <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center justify-content-between">
 
-<!-- Modal de Login -->
-<div id="loginModal" class="modal fade modal-login" role="dialog">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Login</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <form action="php/processa_login.php" method="POST">
-                            <div class="form-group">
-                                <label for="user">Usuário:</label>
-                                <input type="text" class="form-control" id="user" name="usuario" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="senha">Senha:</label>
-                                <input type="password" class="form-control" id="senha" name="senha" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Entrar</button>
-                        </form>
-                    </div>
-                    <div class="col-md-6">
-                        <img src="assets/img/logo01-black.png" alt="Imagem de Login" class="img-fluid">
+            <!--<h1 class="logo"><a href="index.html">CONFINTER</a></h1>-->
+            <!-- Uncomment below if you prefer to use an image logo -->
+            <a href="index.html" class="logo"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>
+
+            <nav id="navbar" class="navbar">
+                <ul>
+                    <li><a class="nav-link scrollto active" href="#sobre">Sobre</a></li>
+                    <li><a class="nav-link scrollto" href="#valores">Nossos Valores</a></li>
+                    <li><a class="nav-link scrollto" href="#servicos">Serviços</a></li>
+                    <li><a class="nav-link scrollto" href="#requi">Requisições</a></li>
+                    <li><a class="nav-link scrollto" href="#faq">Dúvidas</a></li>
+                    <li><a class="nav-link scrollto" href="#depoimentos">Depoimentos</a></li>
+                    <li><a class="nav-link scrollto" href="#chegar">Como Chegar</a></li>
+                    <a class="page-scroll" href="#" data-toggle="modal" data-target="#loginModal">Login</a> 
+                </ul>
+                <i class="bi bi-list mobile-nav-toggle"></i>
+            </nav><!-- .navbar -->
+
+        </div>
+    </header><!-- Fim do Header -->
+    <!-- Modal Login -->
+    <div id="loginModal" class="modal fade modal-login" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <form action="php/processa_login.php" method="POST">
+                                <div class="form-group">
+                                    <label for="user">Usuário:</label>
+                                    <input type="text" class="form-control" id="user" name="usuario">
+                                </div>
+                                <div class="form-group">
+                                    <label for="senha">Senha:</label>
+                                    <input type="password" class="form-control" id="senha" name="senha">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Entrar</button>
+                            </form>
+
+                        </div>
+                        <div class="col-md-6">
+                            <img src="assets/img/logo01-black.png" alt="Imagem de Login" class="img-fluid">
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
 <!-- Seção de Slides -->
 <section id="hero">
