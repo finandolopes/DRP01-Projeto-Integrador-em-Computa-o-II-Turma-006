@@ -438,3 +438,23 @@
          //   $('#data_nascimento').val(dataFormatada);
       //  });
    // });
+// Função para trocar o logo conforme o modo ativo
+function atualizarLogo() {
+  const logoImg = document.getElementById('logo-img');
+  const isModoEscuro = document.body.classList.contains('modo-escuro'); // Assumindo que a classe é 'modo-escuro' para o modo escuro
+  const isAltoContraste = document.body.classList.contains('alto-contraste'); // Assumindo que a classe é 'alto-contraste' para alto contraste
+
+  if (isModoEscuro || isAltoContraste) {
+    logoImg.src = 'assets/img/logo.png'; // Logo para modo escuro ou alto contraste
+  } else {
+    logoImg.src = 'assets/img/logo01-black.png'; // Logo padrão
+  }
+}
+
+// Monitora mudanças nos modos de acessibilidade
+document.addEventListener('DOMContentLoaded', () => {
+  atualizarLogo();
+
+  // Supondo que há um evento para ativar/desativar o modo de acessibilidade
+  document.getElementById('acessibilidade-btn').addEventListener('click', atualizarLogo);
+});

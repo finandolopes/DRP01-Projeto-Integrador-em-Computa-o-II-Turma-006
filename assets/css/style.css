@@ -46,6 +46,7 @@ img {
 
 p {
   margin: 0 0 15px;
+  color: #444;
 }
 
 h1,
@@ -313,7 +314,6 @@ div#preloader {
 /*--------------------------------------------------------------
 # Navigation Menu
 --------------------------------------------------------------*/
-
 /**
 * Desktop Navigation 
 */
@@ -432,18 +432,18 @@ div#preloader {
   color: #fff;
   font-size: 28px;
   cursor: pointer;
-  display: none; /* Escondido em telas maiores */
+  display: none;
   line-height: 0;
   transition: 0.5s;
 }
 
 @media (max-width: 991px) {
   .mobile-nav-toggle {
-    display: block; /* Mostra no mobile */
+    display: block;
   }
 
   .navbar ul {
-    display: none; /* Escondido em mobile */
+    display: none;
   }
 }
 
@@ -466,7 +466,7 @@ div#preloader {
 }
 
 .navbar-mobile ul {
-  display: block; /* Exibe no mobile */
+  display: block;
   position: absolute;
   top: 55px;
   right: 15px;
@@ -498,7 +498,7 @@ div#preloader {
 
 .navbar-mobile .dropdown ul {
   position: static;
-  display: none; /* Mantém oculto inicialmente */
+  display: none;
   margin: 10px 20px;
   padding: 10px 0;
   z-index: 99;
@@ -527,7 +527,7 @@ div#preloader {
 }
 
 .navbar-mobile .dropdown>.dropdown-active {
-  display: block; /* Exibe dropdown ao ativar */
+  display: block;
 }
 
 /*--------------------------------------------------------------
@@ -715,6 +715,7 @@ div#preloader {
 }
 
 .single-well p {
+  color: #444;
 }
 
 /*--------------------------------------------------------------
@@ -2567,82 +2568,93 @@ span.email-notes {
   right: 10px;
   cursor: pointer;
 }
-       .floating-buttons {
-           position: fixed;
-           top: 50%;
-           left: 0; /* Ajuste para centralizar os botões na lateral esquerda */
-           transform: translateY(-50%);
-           z-index: 1000;
-           display: flex;
-           flex-direction: column;
-           align-items: center;
-           padding: 20px;
-           width: 50px; /* Definindo a largura dos botões */
-           border-radius: 50%; /* Tornando o container redondo */
-       }
-   
-       .floating-buttons a {
-           display: flex; /* Usando flex para alinhar ícone verticalmente */
-           justify-content: center; /* Alinhando ícone horizontalmente */
-           align-items: center; /* Alinhando ícone verticalmente */
-           margin-bottom: 10px;
-           width: 40px; /* Definindo a largura dos botões */
-           height: 40px; /* Definindo a altura dos botões */
-           background-color: rgba(0, 0, 0, 0.5); /* Adicionando um fundo semi-transparente */
-           border-radius: 50%; /* Tornando o botão redondo */
-           text-decoration: none;
-           transition: background 0.3s ease;
-       }
-   
-       /* Estilo dos botões flutuantes */
 .floating-buttons {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-}
-/* Estilo do ícone do Instagram */
-.instagram i {
-  color: #D44638; /* Cor vermelha do logo do Instagram, por exemplo */
-}
-
-/* Estilo do ícone do WhatsApp */
-.whatsapp i {
-  color: #25D366; /* Cor verde do logo do WhatsApp */
-}
-
-/* Estilo do ícone do Email */
-.email i {
-  color: #4285F4; /* Cor vermelha do logo do Gmail, por exemplo */
-}
-
-/* Estilo do ícone do GPS */
-.gps i {
-  color: #4285F4; /* Cor azul do logo do Google Maps */
+  top: 50%;
+  left: 0; /* Ajuste para centralizar os botões na lateral esquerda */
+  transform: translateY(-50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  width: 60px; /* Aumentando a largura dos botões */
+  border-radius: 50%; /* Tornando o container redondo */
 }
 
 .floating-buttons a {
-  display: block;
+  display: flex; /* Usando flex para alinhar ícone verticalmente */
+  justify-content: center; /* Alinhando ícone horizontalmente */
+  align-items: center; /* Alinhando ícone verticalmente */
   margin-bottom: 10px;
-  width: 40px;
-  height: 40px;
-  line-height: 40px;
-  text-align: center;
-  background-color: #fff; /* Fundo branco para todos os ícones */
-  border-radius: 50%;
+  width: 50px; /* Aumentando a largura dos botões */
+  height: 50px; /* Aumentando a altura dos botões */    
+  border-radius: 50%; /* Tornando o botão redondo */
   text-decoration: none;
+  transition: background 0.3s ease;
   box-shadow: 0 2px 4px 0 rgba(0,0,0,0.2); /* Sombra para destacar os ícones */
 }
 
 .floating-buttons a:hover {
   opacity: 0.8; /* Efeito ao passar o mouse */
 }
-/* Aumentando o tamanho dos ícones */
+
+/* Estilo do ícone do Instagram */
+.instagram {
+  background-color: #D44638; /* Cor vermelha do logo do Instagram */
+}
+
+.instagram i {
+  color: #ffffff; /* Cor branca para o ícone */
+  font-size: 24px; /* Aumentando o tamanho do ícone */
+}
+
+/* Estilo do ícone do WhatsApp */
+.whatsapp {
+  background-color: #25D366; /* Cor verde do logo do WhatsApp */
+}
+
+.whatsapp i {
+  color: #ffffff; /* Cor branca para o ícone */
+  font-size: 24px; /* Aumentando o tamanho do ícone */
+}
+
+/* Estilo do ícone do Email */
+.email {
+  background-color: #4285F4; /* Cor azul do logo do Gmail */
+}
+
+.email i {
+  color: #ffffff; /* Cor branca para o ícone */
+  font-size: 24px; /* Aumentando o tamanho do ícone */
+}
+
+/* Estilo do ícone do GPS */
+.gps {
+  background-color: #4285F4; /* Cor azul do logo do Google Maps */
+}
+
+.gps i {
+  color: #ffffff; /* Cor branca para o ícone */
+  font-size: 24px; /* Aumentando o tamanho do ícone */
+}
+
+/* Remover qualquer ajuste de tamanho dos ícones */
 .instagram i,
 .whatsapp i,
 .email i,
 .gps i {
-  font-size: 30px; /* Ajuste o tamanho dos ícones conforme necessário */
-  line-height: 40px; /* Alinhamento vertical dos ícones */
+  line-height: initial; /* Remover ajuste de alinhamento vertical */
+}
+
+/* Estilo para a seção de perguntas frequentes */
+.faq {
+  padding: 30px 0; /* Reduza o padding para economizar espaço */
+}
+
+/* Estilo para a seção de perguntas frequentes */
+.faq {
+  padding: 30px 0; /* Reduza o padding para economizar espaço */
 }
 
 /* Estilo para a seção de perguntas frequentes */
@@ -3111,5 +3123,90 @@ span.email-notes {
 .footer-newsletter input[type="submit"]:hover {
   background-color: #0056b3;
 }
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #333;
+  color: white;
+  padding: 10px 0;
+  text-align: center;
+}
+
+nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+nav ul li {
+  display: inline;
+  margin: 0 10px;
+}
+
+nav ul li a {
+  color: white;
+  text-decoration: none;
+}
+
+/* Estilo do modal completo na versão mobile */
+@media (max-width: 768px) {
+  .modal-login .modal-dialog {
+    max-width: 100%;
+    margin: 0;
+  }
+  .modal-login .modal-content {
+    border-radius: 0;
+    height: 100vh;
+  }
+  .modal-login .modal-body {
+    padding: 2rem;
+  }
+  .h-custom {
+    height: 100%;
+  }
+}
+
+/* Divider */
+.divider:after, .divider:before {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #eee;
+}
+
+/* Mobile adjustments for buttons */
+.modal-login .btn-primary {
+  width: 100%;
+  font-size: 1rem;
+  padding: 0.8rem;
+}
+
+/* Tamanho personalizado para o modal de login em desktop */
+@media (min-width: 769px) {
+  .h-custom {
+    height: calc(100% - 73px);
+  }
+}
+/* Espaçamento entre "Lembrar" e "Esqueceu a senha" */
+.d-flex.justify-content-between.align-items-center.mb-3 .form-check {
+  margin-right: 20px; /* Ajuste conforme necessário */
+}
+
+
+@media (max-width: 600px) {
+  nav ul li {
+      display: block;
+      text-align: center;
+      margin: 10px 0;
+  }
+
+  .modal-login .modal-content {
+      width: 90%;
+  }
+}
+
 
 
