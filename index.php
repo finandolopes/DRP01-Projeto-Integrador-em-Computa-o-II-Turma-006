@@ -21,13 +21,14 @@ if (isset($_SESSION['sucesso_depoimento']) && $_SESSION['sucesso_depoimento']) {
 
 ?>
 
-<!DOCTYPE html>
+
+</html><!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CONFINTER | Consolidando sonhos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>CONFINTER | Consolidando sonhos</title>    
 
     <!-- Favicons -->
     <link href="assets/img/favicon.png" rel="icon">
@@ -46,89 +47,222 @@ if (isset($_SESSION['sucesso_depoimento']) && $_SESSION['sucesso_depoimento']) {
     <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
     <link href="lib/nivo-slider/css/nivo-slider.min.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">    
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">   
     <link rel="stylesheet" href="assets/css/acb.css">
     <script src="assets/css/js/acb.js" defer></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
     <!-- Incluindo SweetAlert2 para as notificações -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-    
+    <!-- Scripts Necessários -->       
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Raleway:300,400,500,600,700|Poppins:300,400,500,600,700" rel="stylesheet">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <!-- Scripts Necessários -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@srexi/purecounterjs@1.1.5/dist/purecounter_vanilla.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>    
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>    
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Template Main CSS File -->
+    <link href="assets/css/style.css" rel="stylesheet">
+
     <script>
         $(document).ready(function () {
             // Remover a máscara de data antes de enviar o formulário
             $('#form-requisicao').submit(function () {
+                // Remover a máscara de data antes de enviar o formulário
                 var dataNascimento = $('#data_nascimento').val();
+                // Remover qualquer caractere que não seja número
                 var dataLimpa = dataNascimento.replace(/\D/g, '');
+                // Formatar a data para o padrão YYYY-MM-DD
                 var dataFormatada = dataLimpa.replace(/(\d{2})(\d{2})(\d{4})/, '$3-$2-$1');
+                // Atribuir a data formatada de volta ao campo
                 $('#data_nascimento').val(dataFormatada);
+            });
+        });
+    </script>
+
+
+    <!-- Script JavaScript para validar o formulário -->
+    <script>
+        $(document).ready(function () {
+            // Função para validar o formulário antes do envio
+            $('#form-requisicao').submit(function (event) {
+                // Verifica se o campo nome está vazio
+                if ($('#nome').val().trim() === '') {
+                    alert('Por favor, preencha o campo nome.');
+                    event.preventDefault(); // Impede o envio do formulário
+                    return;
+                }
+
+                // Verifica se o campo data de nascimento está vazio
+                //  if ($('#data_nascimento').val().trim() === '') {
+                //     alert('Por favor, preencha o campo data de nascimento.');
+                //     event.preventDefault(); // Impede o envio do formulário
+                //     return;
+                //  }
+
+                // Verifica se o campo telefone está vazio
+                if ($('#telefone').val().trim() === '') {
+                    alert('Por favor, preencha o campo telefone.');
+                    event.preventDefault(); // Impede o envio do formulário
+                    return;
+                }
+
+                // Verifica se o campo email está vazio
+                if ($('#email').val().trim() === '') {
+                    alert('Por favor, preencha o campo email.');
+                    event.preventDefault(); // Impede o envio do formulário
+                    return;
+                }
+
+                // Verifica se o campo horário de contato está vazio
+                if ($('#horario_contato').val().trim() === '') {
+                    alert('Por favor, preencha o campo horário de contato.');
+                    event.preventDefault(); // Impede o envio do formulário
+                    return;
+                }
+
+                // Verifica se pelo menos uma opção de categoria foi selecionada
+                if ($('input[name="categoria[]"]:checked').length === 0) {
+                    alert('Por favor, selecione pelo menos uma categoria.');
+                    event.preventDefault(); // Impede o envio do formulário
+                    return;
+                }
+            });
+        });
+    </script>
+    <script>
+        // Função para exibir o campo "Outros" quando a opção é selecionada
+        document.addEventListener('DOMContentLoaded', function () {
+            var outrosCheckbox = document.getElementById('outros_check');
+            var outrosInfoDiv = document.getElementById('outros_info_div');
+
+            outrosCheckbox.addEventListener('change', function () {
+                if (outrosCheckbox.checked) {
+                    outrosInfoDiv.style.display = 'block';
+                } else {
+                    outrosInfoDiv.style.display = 'none';
+                }
+            });
+
+            // Verifica se pelo menos uma categoria foi selecionada antes de enviar o formulário
+            var form = document.getElementById('form-requisicao');
+            form.addEventListener('submit', function (event) {
+                var checkboxes = document.querySelectorAll('input[name="categoria[]"]');
+                var isChecked = false;
+                checkboxes.forEach(function (checkbox) {
+                    if (checkbox.checked) {
+                        isChecked = true;
+                    }
+                });
+                if (!isChecked) {
+                    alert('Por favor, selecione pelo menos uma categoria.');
+                    event.preventDefault(); // Impede o envio do formulário
+                }
+            });
+        });
+    </script>
+
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            // Máscara para data (DD/MM/AAAA)
+            //  $('#data_nascimento').mask('00/00/0000');
+
+            // Máscara para hora (HH:MM)
+            $('#horario_contato').mask('00:00');
+
+            $(document).ready(function () {
+                // Máscara para telefone
+                $('#telefone').mask('(00) 00000-0000');
+            });
+
+            // Máscara para e-mail
+            $('#email').mask('A', {
+                translation: {
+                    'A': { pattern: /[\w@\-.+]/, recursive: true }
+                }
             });
 
             // Validação do formulário
-            $('#form-requisicao').submit(function (event) {
-                if ($('#nome').val().trim() === '') {
-                    alert('Por favor, preencha o campo nome.');
-                    event.preventDefault();
-                    return;
+            $('#modalForm').submit(function (event) {
+                // Limpar mensagens de erro
+                $('.error-msg').remove();
+
+                // Flag para validação
+                var isValid = true;
+
+                // Validar nome
+                var nome = $('#nome').val();
+                if (!nome.trim()) {
+                    $('#nome').after('<div class="error-msg">Por favor, preencha o nome.</div>');
+                    isValid = false;
                 }
 
-                if ($('#telefone').val().trim() === '') {
-                    alert('Por favor, preencha o campo telefone.');
-                    event.preventDefault();
-                    return;
+                // Validar data de nascimento
+                var dataNascimento = $('#data_nascimento').val();
+                if (!dataNascimento.trim()) {
+                    $('#data_nascimento').after('<div class="error-msg">Por favor, preencha a data de nascimento.</div>');
+                    isValid = false;
                 }
 
-                if ($('#email').val().trim() === '') {
-                    alert('Por favor, preencha o campo email.');
-                    event.preventDefault();
-                    return;
+                // Validar telefone
+                var telefone = $('#telefone').val();
+                if (!telefone.trim()) {
+                    $('#telefone').after('<div class="error-msg">Por favor, preencha o telefone.</div>');
+                    isValid = false;
                 }
 
-                if ($('#horario_contato').val().trim() === '') {
-                    alert('Por favor, preencha o campo horário de contato.');
-                    event.preventDefault();
-                    return;
+                // Validar e-mail
+                var email = $('#email').val();
+                if (!email.trim()) {
+                    $('#email').after('<div class="error-msg">Por favor, preencha o e-mail.</div>');
+                    isValid = false;
+                } else if (!isValidEmail(email)) {
+                    $('#email').after('<div class="error-msg">Por favor, preencha um e-mail válido.</div>');
+                    isValid = false;
                 }
 
-                if ($('input[name="categoria[]"]:checked').length === 0) {
-                    alert('Por favor, selecione pelo menos uma categoria.');
+                // Validar horário de contato
+                var horarioContato = $('#horario_contato').val();
+                if (!horarioContato.trim()) {
+                    $('#horario_contato').after('<div class="error-msg">Por favor, preencha o horário de contato.</div>');
+                    isValid = false;
+                }
+
+                // Validar categoria
+                var categoria = $('#categoria').val();
+                if (!categoria.trim()) {
+                    $('#categoria').after('<div class="error-msg">Por favor, selecione a categoria.</div>');
+                    isValid = false;
+                }
+
+                // Se algum campo estiver inválido, impedir o envio do formulário
+                if (!isValid) {
                     event.preventDefault();
-                    return;
+                    $('#modalAlert').addClass('alert alert-danger').html('Por favor, corrija os campos destacados.');
                 }
             });
 
-            // Exibir o campo "Outros" quando a opção é selecionada
-            $('#outros_check').change(function () {
-                if ($(this).is(':checked')) {
-                    $('#outros_info_div').show();
-                } else {
-                    $('#outros_info_div').hide();
-                }
-            });
-
-            // Máscara para telefone
-            $('#telefone').mask('(00) 00000-0000');
+            // Função para verificar se o e-mail é válido
+            function isValidEmail(email) {
+                var pattern = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
+                return pattern.test(email);
+            }
         });
-    </script>
-<style>
-.accessibility-btn:focus {
-    outline: 2px solid #000;
-}
-</style>
-</head>
-<body>
+
+    </script>   
+    </head>
 <!-- Inicio Menu Flutuante E-mail e Redes Sociais -->
 <div class="floating-buttons">
-    <a href="https://www.instagram.com/confintersp?igsh=a3NuaGJrem5pYzZu" target="_blank" class="instagram" title="Instagram"><i class="bi bi-instagram"></i></a>
-    <a href="https://api.whatsapp.com/send?phone=11948016298" target="_blank" class="whatsapp"><i class="bi bi-whatsapp" title="WhatsApp"></i></a>
-    <a href="mailto:contato@confinter.com.br" class="email"><i class="bi bi-envelope-at" title="E-mail"></i></i></a>
+    <a href="https://www.instagram.com/confintersp?igsh=a3NuaGJrem5pYzZu" target="_blank" class="instagram" title="Instagram" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+    <a href="https://api.whatsapp.com/send?phone=11948016298" target="_blank" class="whatsapp"><i class="bi bi-whatsapp" title="WhatsApp" aria-label="WhatsApp"></i></a>
+    <a href="mailto:contato@confinter.com.br" class="email"><i class="bi bi-envelope-at" title="E-mail" aria-label="E-mail"></i></i></a>
 </div>
 <!-- Fim do Menu Flutuante E-mail e Redes Sociais -->
 
@@ -175,27 +309,33 @@ if (isset($_SESSION['sucesso_depoimento']) && $_SESSION['sucesso_depoimento']) {
     </div>
 </div>
 <!-- Fim da Barra Lateral de Acessibilidade -->
+ 
+<body>  
 
-<!-- ======= Inicio Header ======= -->
-<header id="header" class="fixed-top">
-    <div class="container d-flex align-items-center justify-content-between">
-        <a href="index.html" class="logo"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>
-        <nav id="navbar" class="navbar">
-            <ul>
-                <li><a class="nav-link scrollto active" href="#sobre">Sobre</a></li>
-                <li><a class="nav-link scrollto" href="#valores">Nossos Valores</a></li>
-                <li><a class="nav-link scrollto" href="#servicos">Serviços</a></li>
-                <li><a class="nav-link scrollto" href="#requi">Requisições</a></li>
-                <li><a class="nav-link scrollto" href="#faq">Dúvidas</a></li>
-                <li><a class="nav-link scrollto" href="#depoimentos">Depoimentos</a></li>
-                <li><a class="nav-link scrollto" href="#chegar">Como Chegar</a></li>
-                <li><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
-            </ul>
-            <i class="bi bi-list mobile-nav-toggle"></i>
-        </nav><!-- .navbar -->
-    </div>
-</header><!-- Fim do Header -->
+    <!-- ======= Inicio Header ======= -->
+    <header id="header" class="fixed-top">
+        <div class="container d-flex align-items-center justify-content-between">
 
+            <!-- Remova o comentário abaixo se preferir usar um TEXTO ao invés de imagem -->
+            <!--<h1 class="logo"><a href="index.html">CONFINTER</a></h1>-->
+            <a href="index.html" class="logo"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>
+
+            <nav id="navbar" class="navbar">
+                <ul>
+                    <li><a class="nav-link scrollto active" href="#sobre">Sobre</a></li>
+                    <li><a class="nav-link scrollto" href="#valores">Nossos Valores</a></li>
+                    <li><a class="nav-link scrollto" href="#servicos">Serviços</a></li>
+                    <li><a class="nav-link scrollto" href="#requi">Requisições</a></li>
+                    <li><a class="nav-link scrollto" href="#faq">Dúvidas</a></li>
+                    <li><a class="nav-link scrollto" href="#depoimentos">Depoimentos</a></li>
+                    <li><a class="nav-link scrollto" href="#chegar">Como Chegar</a></li>
+                    <a class="page-scroll" href="#" data-toggle="modal" data-target="#loginModal">Login</a> 
+                </ul>
+                <i class="bi bi-list mobile-nav-toggle"></i>
+            </nav><!-- .navbar -->
+
+        </div>
+    </header><!-- Fim do Header -->    
  <!-- Modal Login -->
  <div id="loginModal" class="modal fade modal-login" role="dialog">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -241,9 +381,10 @@ if (isset($_SESSION['sucesso_depoimento']) && $_SESSION['sucesso_depoimento']) {
       </div>
     </div>
   </div>
+  
 
- <!-- ======= Incio Slides ======= -->
- <section id="hero" class="d-flex align-items-center">
+<!-- ======= Incio Slides ======= -->
+<section id="hero" class="d-flex align-items-center">
     <div class="full-site w-100">
         <div id="home" class="slider-area w-100">
             <div class="bend niceties preview-2 w-100">
@@ -336,7 +477,6 @@ if (isset($_SESSION['sucesso_depoimento']) && $_SESSION['sucesso_depoimento']) {
             </div>
         </div>
     </section><!-- Fim Slides -->
-
 
 <main id="main">
     <!-- Seção Sobre -->
@@ -751,7 +891,6 @@ if (isset($_SESSION['sucesso_depoimento']) && $_SESSION['sucesso_depoimento']) {
         }
     };
 </script>
-    <!-- Fim da Seção Enviar Depoimentos -->
 
     <!-- Seção Depoimentos -->
     <section id="depoimentos" class="testimonials">
@@ -842,7 +981,7 @@ if (isset($_SESSION['sucesso_depoimento']) && $_SESSION['sucesso_depoimento']) {
 
 <!-- Início do Footer -->
 <footer id="footer">
-    <div class="footer-top">       
+    <div class="footer-top">        
     <div class="container d-md-flex py-4">
         <div class="me-md-auto text-center text-md-start">
             <div class="copyright darkmode-white-text">
@@ -854,8 +993,8 @@ if (isset($_SESSION['sucesso_depoimento']) && $_SESSION['sucesso_depoimento']) {
         </div>           
     </div>
 </footer>
-<!-- Fim do Footer -->   
-
+<!-- Fim do Footer -->  
+ 
 <!-- Elementos adicionais -->
 <div id="preloader"></div>
 <a href="#" class="back-to-top d-flex align-items-center justify-content-center" aria-label="Voltar ao topo"><i class="bi bi-arrow-up-short"></i></a>
@@ -882,9 +1021,15 @@ if (isset($_SESSION['sucesso_depoimento']) && $_SESSION['sucesso_depoimento']) {
     });
 </script>
 
-<script src="assets/js/acb.js"></script>
+<script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"
+    ></script>   
+    <script src="assets/js/acb.js" defer></script> 
+   
 <!-- Importar o arquivo de validações JS -->
 <script src="form-validation.js"></script>
 </body>
-</html> 
+
+</html>
 
