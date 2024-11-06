@@ -458,3 +458,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Supondo que há um evento para ativar/desativar o modo de acessibilidade
   document.getElementById('acessibilidade-btn').addEventListener('click', atualizarLogo);
 });
+on('click', '.mobile-nav-toggle', function(e) {
+    select('#navbar').classList.toggle('navbar-mobile');
+    this.classList.toggle('bi-list');
+    this.classList.toggle('bi-x');
+});
