@@ -3,11 +3,12 @@
 
 
 ## 📋 Índice
-- [Link do projeto:](http://confinter.rf.gd/)
+- [Link do projeto:Homologação](http://confinter.rf.gd/)
+- [Link do projeto:Produção](http://confinter.com.br)
 
 - [📖 Sobre](#-Sobre)
 - [🚀 Tecnologias utilizadas](#-Tecnologias-utilizadas)
-- [🖥 Preview](#-Preview)
+- [🖥 Preview "Vercel sem acesso ao BD"](#-Preview)
 - [📌 Créditos](#-Créditos)
 
 ## 📖 Sobre
