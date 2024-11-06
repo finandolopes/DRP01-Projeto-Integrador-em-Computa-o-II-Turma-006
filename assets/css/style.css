@@ -3207,6 +3207,13 @@ nav ul li a {
       width: 90%;
   }
 }
-
+@media (max-width: 991px) {
+    .mobile-nav-toggle {
+        display: block; /* Garante que o ícone apareça em dispositivos móveis */
+    }
+    .navbar ul {
+        display: none; /* Oculta o menu principal */
+    }
+}
 
 
