@@ -8,7 +8,7 @@
 
 - [📖 Sobre](#-Sobre)
 - [🚀 Tecnologias utilizadas](#-Tecnologias-utilizadas)
-- [🖥 Preview "Vercel sem acesso ao BD"](#-Preview)
+- [🖥 Preview "Vercel sem acesso ao BD"](https://drp-01-projeto-integrador-em-computa-o-ii-turma-006.vercel.app/)
 - [📌 Créditos](#-Créditos)
 
 ## 📖 Sobre
