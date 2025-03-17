@@ -1,2221 +1,1019 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const state = {
-        fontSize: 100,
-        letterSpacing: 0,
-        lineSpacing: 0,
-        isDarkModeActive: false,
-        isHighContrastActive: false,
-        isGrayScaleActive: false,
-        isNegativeContrastActive: false,
-        readingRulerMode: 'móvel', // 'móvel' ou 'fixo'
-        readingMaskMode: 'móvel', // 'móvel' ou 'fixo'
-        isMagnifying: false,
-        textReaderSpeed: 'normal', // 'normal', 'fast', 'slow'
-        saturationLevel: 1,
-        epilepsyMode: false,
-        tdaMode: false,
-        dyslexiaMode: false,
-        daltonismMode: 0, // 0: None, 1: Protanopia, 2: Deuteranopia, 3: Tritanopia
-        isMotorSkillsModeActive: false,
-        isTextReaderActive: false,
-        isLibrasActive: false, // Novo estado para Libras
-    };
+<?php
+session_start();
+include_once('php/conexao.php');
 
-    function loadSettings() {
-        const savedState = JSON.parse(localStorage.getItem('accessibilityState'));
-        if (savedState) Object.assign(state, savedState);
-        applySettings();
-    }
+// Verificar se o formulário de login foi submetido
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    include_once('php/processa_login.php');
+}
+// Consulta ao banco de dados para recuperar as imagens do carrossel
+$sql = "SELECT * FROM imagens_carrossel";
+$result = mysqli_query($conexao, $sql);
 
-    function saveSettings() {
-        localStorage.setItem('accessibilityState', JSON.stringify(state));
-    }
 
-    function applySettings() {
-        adjustFontSize(state.fontSize);
-        adjustLetterSpacing(state.letterSpacing);
-        adjustLineSpacing(state.lineSpacing);
-        document.body.style.filter = `saturate(${state.saturationLevel})`;
-        if (state.isDarkModeActive) toggleDarkMode(true);
-        if (state.isHighContrastActive) toggleHighContrast(true);
-        if (state.isGrayScaleActive) toggleGrayScale(true);
-        if (state.isNegativeContrastActive) toggleNegativeContrast(true);
-        if (state.isReadingRulerActive) toggleReadingRuler(true);
-        if (state.isReadingMaskActive) toggleReadingMask(true);
-        if (state.isMotorSkillsModeActive) toggleMotorSkillsMode(true);
-        if (state.isTextReaderActive) toggleTextReader(true);
-        if (state.isLibrasActive) toggleLibras(true); // Ativar Libras se estiver ativo
-    }
+// Verificar se a variável de sessão sucesso_depoimento está definida
+if (isset($_SESSION['sucesso_depoimento']) && $_SESSION['sucesso_depoimento']) {
+    // Exibir a mensagem de sucesso
+    echo "<p class='text-success'>Depoimento enviado com sucesso!</p>";
+    // Remover a variável de sessão para que a mensagem não seja exibida novamente após o próximo carregamento da página
+    unset($_SESSION['sucesso_depoimento']);
+}
 
-    function toggleMenu() {
-        const menu = document.getElementById('accessibilityMenu');
-        menu.classList.toggle('hidden');
-    }
+?>
 
-    function createAccessibilityButton() {
-        const button = document.createElement('button');
-        button.innerHTML = '<i class="fas fa-universal-access fa-3x accessibility-icon"></i>';
-        button.className = 'btn btn-primary accessibility-toggle fixed-accessibility-button';
-        button.setAttribute('aria-label', 'Menu de Acessibilidade');
-        button.title = 'Menu de Acessibilidade';
-        document.body.appendChild(button);
-        button.onclick = toggleMenu;
-        // Estilo do botão para visibilidade e fácil toque
-        button.style.position = 'fixed';
-        button.style.top = '20%'; // Move para cima (ajuste conforme necessário)
-        button.style.transform = 'translateY(0)'; // Remove centralização vertical
 
-        button.style.right = '10px';
-        button.style.transform = 'translateY(-50%)';
-        button.style.zIndex = '10000';
-        button.style.borderRadius = '50%';
-        button.style.width = '60px';
-        button.style.height = '60px';
-        button.style.display = 'flex';
-        button.style.justifyContent = 'center';
-        button.style.alignItems = 'center';
-    }
+<!DOCTYPE html>
+<html lang="pt-br">
 
-    function createAccessibilityMenu() {
-        const menu = document.createElement('div');
-        menu.id = 'accessibilityMenu';
-        menu.className = 'accessibility-menu hidden';
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONFINTER | Consolidando sonhos</title>
 
-        menu.innerHTML = `
-           <div class="container-fluid h-100">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3 class="text-primary">Acessibilidade</h3>
-                    <button class="btn btn-outline-secondary" onclick="showHelp()">
-                        <i class="fas fa-question-circle"></i>
-                    </button>
-                                    </div>
-                                    <div class="row">
-                                        <!-- Ajustes de Fonte -->
-                                        <div class="col-12 mb-3">
-                                        <div class="card">
-                                            <div class="card-body text-center">
-                                                <h5 class="card-title">Ajustes de Fonte</h5>
-                                                <div class="d-flex justify-content-around mb-3">
-                                                    <div class="text-center icon-button" onclick="increaseFont()">
-                                                        <i class="fas fa-search-plus fa-2x text-info"></i>
-                                                        <p class="icon-label">Aumentar Fonte</p>
-                                                    </div>
-                                                    <div class="text-center icon-button" onclick="decreaseFont()">
-                                                        <i class="fas fa-search-minus fa-2x text-info"></i>
-                                                        <p class="icon-label">Diminuir Fonte</p>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="letterSpacing">Espaçamento entre Letras:</label>
-                                                    <input type="range" id="letterSpacing" class="form-control-range" min="0" max="20" value="0" onchange="adjustLetterSpacing(this.value)" />
-                                                    <span id="letterSpacingLabel">Espaçamento: 0%</span>
-                                                </div>
-                                            <div class="form-group">
-                                        <label for="lineHeight">Altura da Linha:</label>
-                                        <input type="range" id="lineHeight" class="form-control-range" min="1" max="2" step="0.1" value="1.5" onchange="adjustLineHeight(this.value)" />
-                                        <span id="lineHeightLabel">Altura: 1.5</span>
-                                    </div>
-                            </div>
-                        </div>
+    <!-- Favicons -->
+    <link href="assets/img/favicon.png" rel="icon">
+    <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Raleway:300,400,500,600,700|Poppins:300,400,500,600,700" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+    <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+    <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+    <link href="lib/nivo-slider/css/nivo-slider.min.css" rel="stylesheet">
+    <link href="assets/css/style.css" rel="stylesheet">    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    
+    <script src="assets/css/js/plugin.js" defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Incluindo SweetAlert2 para as notificações -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Raleway:300,400,500,600,700|Poppins:300,400,500,600,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css">
+    <!-- Scripts Necessários -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@srexi/purecounterjs@1.1.5/dist/purecounter_vanilla.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Remover a máscara de data antes de enviar o formulário
+            $('#form-requisicao').submit(function () {
+                var dataNascimento = $('#data_nascimento').val();
+                var dataLimpa = dataNascimento.replace(/\D/g, '');
+                var dataFormatada = dataLimpa.replace(/(\d{2})(\d{2})(\d{4})/, '$3-$2-$1');
+                $('#data_nascimento').val(dataFormatada);
+            });
+
+            // Validação do formulário
+            $('#form-requisicao').submit(function (event) {
+                if ($('#nome').val().trim() === '') {
+                    alert('Por favor, preencha o campo nome.');
+                    event.preventDefault();
+                    return;
+                }
+
+                if ($('#telefone').val().trim() === '') {
+                    alert('Por favor, preencha o campo telefone.');
+                    event.preventDefault();
+                    return;
+                }
+
+                if ($('#email').val().trim() === '') {
+                    alert('Por favor, preencha o campo email.');
+                    event.preventDefault();
+                    return;
+                }
+
+                if ($('#horario_contato').val().trim() === '') {
+                    alert('Por favor, preencha o campo horário de contato.');
+                    event.preventDefault();
+                    return;
+                }
+
+                if ($('input[name="categoria[]"]:checked').length === 0) {
+                    alert('Por favor, selecione pelo menos uma categoria.');
+                    event.preventDefault();
+                    return;
+                }
+            });
+
+            // Exibir o campo "Outros" quando a opção é selecionada
+            $('#outros_check').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#outros_info_div').show();
+                } else {
+                    $('#outros_info_div').hide();
+                }
+            });
+
+            // Máscara para telefone
+            $('#telefone').mask('(00) 00000-0000');
+        });
+    </script>
+<style>
+.accessibility-btn:focus {
+    outline: 2px solid #000;
+}
+.section-title h2, .section-headline h2 {
+    font-size: 2.5em;
+    font-weight: bold;
+}
+.floating-buttons a {
+    font-size: 2.5em; /* Increase the size of the icons */
+}
+#modalSimulacao {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+#modalSimulacao h2 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+#modalSimulacao form {
+    display: flex;
+    flex-direction: column;
+}
+#modalSimulacao form label {
+    margin-bottom: 5px;
+}
+#modalSimulacao form input,
+#modalSimulacao form select,
+#modalSimulacao form button {
+    margin-bottom: 15px;
+    padding: 10px;
+    font-size: 1em;
+}
+#modalSimulacao form button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+#modalSimulacao form button:hover {
+    background-color: #0056b3;
+}
+#modalSimulacao #resultado {
+    margin-top: 20px;
+}
+#modalSimulacao .close-btn {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    font-size: 1em;
+}
+#modalSimulacao .close-btn:hover {
+    background-color: #c82333;
+}
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+.icon-help {
+    font-size: 80px; /* Increase the size of the icons */
+}
+.form-group.col-md-4 {
+    display: inline-block;
+    width: 48%;
+}
+.form-group.col-md-2 {
+    display: inline-block;
+    width: 23%;
+}
+.carousel-item {
+    height: 100vh;
+    min-height: 300px;
+    background: no-repeat center center scroll;
+    background-size: cover;
+}
+.carousel-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+.carousel-container .container {
+    text-align: center;
+    color: #fff;
+}
+.carousel-container .container p {
+    font-size: 2em;
+    font-weight: bold;
+}
+</style>
+</head>
+<body>
+<!-- Inicio Menu Flutuante E-mail e Redes Sociais -->
+<div class="floating-buttons">
+    <a href="https://www.instagram.com/confintersp?igsh=a3NuaGJrem5pYzZu" target="_blank" class="instagram" title="Instagram"><i class="bi bi-instagram"></i></a>
+    <a href="https://api.whatsapp.com/send?phone=11948016298" target="_blank" class="whatsapp"><i class="bi bi-whatsapp" title="WhatsApp"></i></a>
+    <a href="mailto:contato@confinter.com.br" class="email"><i class="bi bi-envelope-at" title="E-mail"></i></i></a>
+</div>
+<!-- Fim do Menu Flutuante E-mail e Redes Sociais -->
+
+<!-- ======= Inicio Header ======= -->
+<header id="header" class="fixed-top">
+    <div class="container d-flex align-items-center justify-content-between">
+        <a href="index.html" class="logo"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>
+        <nav id="navbar" class="navbar">
+            <ul>
+                <li><a class="nav-link scrollto active" href="#sobre">Sobre</a></li>
+                <li><a class="nav-link scrollto" href="#valores">Nossos Valores</a></li>
+                <li><a class="nav-link scrollto" href="#servicos">Serviços</a></li>
+                <li><a class="nav-link scrollto" href="#requi">Requisições</a></li>
+                <li><a class="nav-link scrollto" href="#faq">Dúvidas</a></li>
+                <li><a class="nav-link scrollto" href="#depoimentos">Depoimentos</a></li>
+                <li><a class="nav-link scrollto" href="#chegar">Como Chegar</a></li>
+                <li><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
+            </ul>
+            <i class="bi bi-list mobile-nav-toggle"></i>
+        </nav><!-- .navbar -->
+    </div>
+</header><!-- Fim do Header -->
+
+ <!-- Modal Login -->
+ <div id="loginModal" class="modal fade modal-login" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="container-fluid h-custom">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+              <!-- Logo da Empresa -->
+              <div class="col-md-6 d-none d-md-block text-center">
+                <img src="assets/img/logo01-black.png" class="img-fluid login-logo" id="logo-img" alt="Logo da Empresa">
+              </div>
+              <div class="col-12 col-md-6">
+                <form action="php/processa_login.php" method="POST">
+                  <!-- Campo de Usuário -->
+                  <div class="form-outline mb-4">
+                    <input type="text" class="form-control form-control-lg" id="user" name="usuario" placeholder="Usuário" required />
+                    <label class="form-label" for="user">Usuário</label>
+                  </div>
+  
+                  <!-- Campo de Senha -->
+                  <div class="form-outline mb-3">
+                    <input type="password" class="form-control form-control-lg" id="senha" name="senha" placeholder="Senha" required />
+                    <label class="form-label" for="senha">Senha</label>
+                  </div>
+  
+                  <!-- Lembrar e Esqueci a Senha -->
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="form-check">
+                      <input class="form-check-input me-2" type="checkbox" value="" />
+                      <label class="form-check-label">Lembrar</label>
                     </div>
-                    <!-- Modos Visuais -->
-                    <div class="col-12 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Contrastes e Modos</h5>
-                                <div class="d-flex justify-content-around mb-3">
-                                    <div class="text-center icon-button" onclick="toggleDarkMode()">
-                                        <i id="darkModeIcon" class="fas fa-moon fa-2x text-primary"></i>
-                                        <p class="icon-label">Modo Escuro</p>
-                                    </div>
-                                    <div class="text-center icon-button" onclick="toggleHighContrast()">
-                                        <i id="highContrastIcon" class="fas fa-adjust fa-2x text-warning"></i>
-                                        <p class="icon-label">Alto Contraste</p>
-                                    </div>                                    
-                                    <div class="text-center icon-button" onclick="toggleNegativeContrast()">
-                                        <i id="negativeContrastIcon" class="fas fa-exclamation-triangle fa-2x text-danger"></i>
-                                        <p class="icon-label">Contraste Negativo</p>
-                                    </div>
-                                    <!-- <div class="text-center icon-button" onclick="toggleGrayScale()">
-                                        <i id="grayScaleIcon" class="fas fa-tint fa-2x text-danger"></i>
-                                        <p class="icon-label">Tons de Cinza</p>
-                                    </div> -->
+                    <a href="#!" class="text-body">Esqueceu a senha?</a>
+                  </div>
+  
+                  <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">Entrar</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- VLibras - Intérprete de Libras -->
+<div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+        <div class="vw-plugin-top-wrapper"></div>
+    </div>
+</div>
+
+<!-- Script VLibras -->
+<script>
+    (function loadVLibras() {
+        const script = document.createElement('script');
+        script.src = 'https://vlibras.gov.br/app/vlibras-plugin.js';
+        script.defer = true;
+        script.onload = function () {
+            console.log("VLibras carregado com sucesso!");
+            new VLibras.Widget();
+        };
+        document.body.appendChild(script);
+    })();
+</script>
+<!-- Seção de Slides -->
+<section id="hero">
+    <div class="hero-container">
+        <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000" role="region" aria-label="Slider de Herói">
+            <ol id="hero-carousel-indicators" class="carousel-indicators">
+                <?php
+                $active = true;
+                $index = 0;
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $activeClass = $active ? 'class="active"' : '';
+                    echo "<li data-bs-target='#heroCarousel' data-bs-slide-to='$index' $activeClass></li>";
+                    $active = false;
+                    $index++;
+                }
+                ?>
+            </ol>
+            <div class="carousel-inner" role="listbox">
+                <?php
+                mysqli_data_seek($result, 0); // Reset result pointer
+                $active = true;
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $image = $row['nome_arquivo'];
+                    $caption = $row['legenda'];
+                    $activeClass = $active ? 'active' : '';
+                    echo "<div class='carousel-item $activeClass' style='background-image: url(assets/img/slider/$image)'>
+                            <div class='carousel-container'>
+                                <div class='container'>
+                                    <p class='animate__animated animate__fadeInDown'>$caption</p>
                                 </div>
                             </div>
+                          </div>";
+                    $active = false;
+                }
+                ?>
+            </div>
+            <a class="carousel-control-prev" href="#heroCarousel" role="button" data-bs-slide="prev" aria-label="Slide anterior">
+                <span class="carousel-control-prev-icon bi bi-chevron-left" aria-hidden="true"></span>
+            </a>
+            <a class="carousel-control-next" href="#heroCarousel" role="button" data-bs-slide="next" aria-label="Próximo slide">
+                <span class="carousel-control-next-icon bi bi-chevron-right" aria-hidden="true"></span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<main id="main">
+    <!-- Seção Sobre -->
+    <section id="sobre" class="about">
+        <div class="container" data-aos="fade-up">
+            <div class="section-headline text-center">
+                <h2>Sobre Nós</h2>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="darkmode-white-text">
+                            <p>
+                                A <strong>CONFINTER</strong> é uma empresa especializada em Consultoria Financeira e Correspondente Bancário que atua na intermediação de negócios, presencialmente e online.
+                            </p>
+                            <p>
+                                Seguimos as diretrizes do Banco Central do Brasil, nos termos da Resolução no 3.954/2011. Nosso procedimento de avaliação de crédito é submetido à política de crédito da Instituição Financeira escolhida pelo usuário e está submetida a aprovação.
+                            </p>
+                            <p>
+                                Antes da contratação de qualquer serviço através de nossos parceiros e consultores, você receberá todas as condições e informações relativas à linha de crédito a ser contratada, de forma completa e transparente.
+                            </p>
                         </div>
                     </div>
-                    <!-- Ferramentas de Leitura -->
-                    <div class="col-12 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Ferramentas de Leitura</h5>
-                                <div class="d-flex justify-content-between">
-                                    <div class="text-center icon-button" onclick="toggleReadingRuler()">
-                                        <i id="readingRulerIcon" class="fas fa-grip-lines fa-2x text-info"></i>
-                                        <p class="icon-label">Régua</p>
-                                    </div>
-                                    <div class="text-center icon-button" onclick="toggleReadingMask()">
-                                        <i id="readingMaskIcon" class="fas fa-mask  fa-2x text-info"></i>
-                                        <p class="icon-label">Máscara</p>
-                                    </div>
-                                    <div class="text-center icon-button" onclick="toggleMagnifier()">
-                                        <i id="magnifierIcon" class="fas fa-search fa-2x text-info"></i>
-                                        <p class="icon-label">Lupa</p>
-                                    </div>
-                                </div>
-                                <div class="text-center mt-2 icon-button">
-                                    <i id="textReaderIcon" class="fas fa-volume-up fa-2x" onclick="toggleTextReader()"></i>
-                                    <p class="icon-label">Leitura de Texto <span id="textReaderSpeedLabel">(Normal)</span></p>
-                                </div>
-                            </div>
+                </div>
+</div>
+        </div>
+    </section>
+    <!-- Fim da Seção Sobre -->
+
+    <!-- Seção Missão, Visão e Valores -->
+    <section id="valores" class="services section-bg">
+        <div class="container" data-aos="fade-up">
+            <div class="section-headline text-center">
+                <h2>Nossos Valores</h2>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="icon-box iconbox-blue">
+                        <div class="icon">
+                            <img src="assets/img/missao.png" alt="Missão da empresa">
                         </div>
+                        <h4>Missão</h4>
+                        <p>Facilitar o acesso a crédito consignado e fornecer consultoria financeira personalizada, visando o equilíbrio e bem-estar financeiro dos nossos clientes.</p>
                     </div>
-                    <!-- Saturação -->
-                    <div class="col-12 mb-3">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Saturação</h5>
-                                <button class="btn btn-outline-info w-100" onclick="toggleSaturation()">Ajustar Saturação</button>
-                            </div>
+                </div>
+                <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-md-0" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="icon-box iconbox-orange">
+                        <div class="icon">
+                            <img src="assets/img/visao.png" alt="Visão da empresa">
                         </div>
+                        <h4>Visão</h4>
+                        <p>Ser reconhecida como a empresa líder em intermediação de negócios, destacando-se pela excelência no atendimento ao cliente e pela construção de relacionamentos sólidos e duradouros.</p>
                     </div>
-                    <!-- Tipos de  Fontes -->
-                    <!--  <label for="font-family">Fonte:</label>
-                <select id="font-family" onchange="changeFontFamily(this.value)">
-                    <option value="">Padrão</option>
-                    <option value="Arial">Arial</option>
-                    <option value="Verdana">Verdana</option>
-                    <option value="Georgia">Georgia</option>
-                    <option value="Times New Roman">Times New Roman</option>
-                </select>-->
-                    <!-- Modos Especiais -->                    
-                    <div class="col-12">                        
-                        <button class="btn btn-outline-secondary w-100 mb-1 btn-sm" onclick="toggleDaltonismMode()">Daltonismo <span id="daltonismModeLabel">(Nenhum)</span></button>
-                        <button class="btn btn-outline-secondary w-100 mb-1 btn-sm" onclick="toggleLibrasMode()">Libras <span id="librasModeLabel">(Inativo)</span></button>
-                    </div>
-                    <!-- Resetar Configurações -->
-                    <div class="col-12">
-                        <button class="btn btn-danger w-100 mt-3" onclick="resetSettings()">Resetar</button>
+                </div>
+                <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-lg-0" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="icon-box iconbox-pink">
+                        <div class="icon">
+                            <img src="assets/img/valores.png" alt="Valores da empresa">
+                        </div>
+                        <h4>Valores</h4>
+                        <p>
+                            <strong>Transparência:</strong> Agimos com total transparência em nossas operações e informações, promovendo a confiança mútua.<br>
+                            <strong>Comprometimento Personalizado:</strong> Nos dedicamos a entender as necessidades individuais de cada cliente, oferecendo soluções financeiras.<br>
+                            <strong>Respeito e Empatia:</strong> Valorizamos a diversidade e tratamos todos com respeito e empatia, construindo relações duradouras.<br>
+                            <strong>Sustentabilidade Financeira:</strong> Comprometemo-nos a promover práticas financeiras sustentáveis, visando o bem-estar financeiro a longo prazo de nossos clientes.
+                        </p>
                     </div>
                 </div>
             </div>
-        `;
+        </div>
+    </section>
+    <!-- Fim da Seção Missão, Visão e Valores -->
 
-        document.body.appendChild(menu);
-    }
+    <!-- Seção de Serviços -->
+    <section id="servicos" class="services-area area-padding">
+        <div class="container faq" data-aos="fade-up">
+            <div class="section-title text-center">
+                <h2>Nossos Serviços</h2>
+            </div>
+            <div class="row text-center">
+                <div class="col-md-3 col-sm-6">
+                    <div class="single-services">
+                        <div class="service-box">
+                            <i class="bi bi-briefcase icon-help" aria-hidden="true"></i>
+                            <h4><a href="#">Consultoria</a></h4>
+                            <p>Nossos especialistas ajudarão desde a abertura de contas até delinear a melhor estratégia para os diferentes mercados financeiros.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="single-services">
+                        <div class="service-box">
+                            <i class="bi bi-person-vcard-fill icon-help" aria-hidden="true"></i>
+                            <h4><a href="#">Intermediação de Negócios</a></h4>
+                            <p>Atuando como correspondentes bancários com mais de 15 anos de experiência. Parceria com os principais bancos e financeiras de crédito consignado no país.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="single-services">
+                        <div class="service-box">
+                            <i class="bi bi-credit-card icon-help" aria-hidden="true"></i>
+                            <h4><a href="#">Cartões de Crédito Consignado</a></h4>
+                            <p>Conveniado com os principais bancos, ao todo são mais de 250 convênios ativos em Governos, Prefeituras e para aposentados e pensionistas do INSS.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="single-services">
+                        <div class="service-box">
+                            <i class="bi bi-cash-coin icon-help" aria-hidden="true"></i>
+                            <h4><a href="#">Saque Aniversário FGTS</a></h4>
+                            <p>No saque-aniversário você pode sacar o valor que possui em FGTS com taxas a partir de 1.29% a.m..</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Fim da Seção de Serviços -->
 
-    // Adicione os estilos CSS diretamente no JavaScript para manter tudo acoplado
-    const style = document.createElement('style');
-    style.innerHTML = `
-        .accessibility-menu {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 20px;
-            max-width: 600px;
-            margin: auto;
-        }
-        .accessibility-menu h3 {
-            font-size: 1.5rem;
-            color: #007bff;
-        }
-        .accessibility-menu .card {
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .accessibility-menu .card-body {
-            padding: 15px;
-        }
-        .accessibility-menu .btn {
-            border-radius: 20px;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .accessibility-menu .btn:hover {
-            background-color: #007bff;
-            color: #fff;
-        }
-        .accessibility-menu .btn-outline-secondary:hover {
-            background-color: #6c757d;
-            color: #fff;
-        }
-        .accessibility-menu .btn-outline-info:hover {
-            background-color: #17a2b8;
-            color: #fff;
-        }
-        .accessibility-menu .btn-outline-warning:hover {
-            background-color: #ffc107;
-            color: #fff;
-        }
-        .accessibility-menu .btn-outline-success:hover {
-            background-color: #28a745;
-            color: #fff;
-        }
-        .accessibility-menu .btn-outline-danger:hover {
-            background-color: #dc3545;
-            color: #fff;
-        }
-        .accessibility-menu .btn-outline-primary:hover {
-            background-color: #007bff;
-            color: #fff;
-        }
-        .accessibility-menu .btn-outline-secondary:hover {
-            background-color: #6c757d;
-            color: #fff;
-        }
-        .accessibility-menu .icon-button {
-            cursor: pointer;
-            transition: transform 0.3s, color 0.3s;
-        }
-        .accessibility-menu .icon-button:hover {
-            transform: scale(1.1);
-            color: #007bff;
-        }
-        .accessibility-menu .icon-label {
-            font-size: 0.85rem;
-        }
-        .accessibility-menu .icon-button.selected i {
-            color: #007bff;
-        }
-        .accessibility-menu .icon-button.selected {
-            transform: scale(1.1);
-        }
-        #readingRuler {
-            background-color: rgba(255, 255, 0, 0.8);
-            position: fixed;
-            width: 100%;
-            height: 5px;
-            z-index: 1000;
-        }
+     <!-- Seção Requisição de Análise de Crédito -->
+     <section id="requi" class="requisicoes section-bg">
+        <div class="container">
+            <div class="section-title">
+                <h2>Requisição de Análise de Crédito</h2>
+            </div>
+            <div class="formulario-modal" id="requisicaoForm">
+                <form action="php/process.php" method="POST" id="form-requisicao">
+                    <div class="form-group">
+                        <label for="nome">Nome completo:</label>
+                        <input type="text" class="form-control" id="nome" name="nome" placeholder="Nome completo" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="data_nascimento">Data de Nascimento:</label>
+                            <input type="text" class="form-control" id="data_nascimento" name="data_nascimento" placeholder="Insira sua data de nascimento" required>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="telefone">Telefone:</label>
+                            <input type="tel" class="form-control" id="telefone" name="telefone" placeholder="(00) 00000-0000" required maxlength="15">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="email">E-mail:</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="seu@email.com" required>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="horario_contato">Horário para Contato:</label>
+                            <input type="time" class="form-control" id="horario_contato" name="horario_contato" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo">Tipo:</label>
+                        <textarea class="form-control" id="tipo" name="tipo" rows="3" maxlength="250"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Categoria:</label>
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="aposentado" name="categoria[]" value="Aposentado">
+                                    <label class="form-check-label" for="aposentado">Aposentado</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="pensionista" name="categoria[]" value="Pensionista">
+                                    <label class="form-check-label" for="pensionista">Pensionista</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="servidor_publico" name="categoria[]" value="Servidor Público">
+                                    <label class="form-check-label" for="servidor_publico">Servidor Público</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="outros_check" name="categoria[]" value="Outros">
+                                    <label class="form-check-label" for="outros_check">Outros</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="outros_info_div" style="display: none;">
+                        <label for="outros_info">Insira outras informações se necessário:</label>
+                        <input type="text" class="form-control" id="outros_info" name="outros_info" maxlength="200">
+                    </div>
+                    <div class="form-group text-center">
+                        <button type="submit" class="btn btn-primary">Enviar Requisição</button>
+                    </div>
+                </form>
+                <script>
+                    $(document).ready(function () {
+                        // Aplicar máscara para data de nascimento
+                        $('#data_nascimento').mask('00/00/0000');
 
-        #readingMask {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            pointer-events: none;
-        }
+                        $('#form-requisicao').submit(function (event) {
+                            event.preventDefault(); // Impede o envio padrão do formulário
+                            let isValid = true;
+                            let missingFields = [];
 
-        #readingHole {
-            width: 100%;
-            height: 50px;
-            background-color: transparent;
-        }
+                            if ($('#nome').val().trim() === '') {
+                                missingFields.push('Nome');
+                                isValid = false;
+                            }
+                            if ($('#telefone').val().trim() === '') {
+                                missingFields.push('Telefone');
+                                isValid = false;
+                            }
+                            if ($('#email').val().trim() === '') {
+                                missingFields.push('E-mail');
+                                isValid = false;
+                            }
 
-        #magnifier {
-            position: fixed;
-            border-radius: 50%;
-            border: 3px solid #007bff;
-            overflow: hidden;
-            z-index: 10000;
-            pointer-events: none;
-        }
-        .fixed-accessibility-button {
-            font-size: initial !important;
-        }
-        .accessibility-icon {
-            font-size: 3em !important;
-            color: white !important;
-            pointer-events: none;
-        }
-    `;
-    document.head.appendChild(style);
+                            if (!isValid) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Erro',
+                                    text: `Os seguintes campos estão faltando: ${missingFields.join(', ')}`,
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                });
+                            } else {
+                                // Formatar a data de nascimento antes de enviar o formulário
+                                let dataNascimento = $('#data_nascimento').val();
+                                let dataFormatada = dataNascimento.replace(/(\d{2})[-\/](\d{2})[-\/](\d{4})/, '$3-$2-$1');
+                                $('#data_nascimento').val(dataFormatada);
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Requisição Enviada',
+                                    text: 'Sua requisição foi enviada com sucesso!',
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                }).then(function() {
+                                    // Aqui você pode submeter o formulário após o alerta
+                                    $('#form-requisicao')[0].submit();
+                                });
+                            }
+                        });
+                    });
+                </script>
+            </div>
+        </div>
+    </section>
+    <!-- Fim da Seção Requisição de Análise de Crédito -->
    
+   <!-- Inicio da Seção Simulação -->
+    <section id="analise-credito" class="section-bg">
+        <div class="container" data-aos="fade-up">
+            <div class="section-title text-center">
+                <h2>Análise de Crédito</h2>
+                <p>Simule seu empréstimo consignado e veja as melhores opções para você.</p>
+                <button class="btn btn-primary" onclick="abrirModal()">Simular Empréstimo</button>
+            </div>
+        </div>
+    </section>
+    
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div id="modalSimulacao">
+        <h2>Simulador de Empréstimo</h2>
+        <form id="formSimulacao">
+            <label for="valor">Valor desejado:</label>
+            <input type="number" id="valor" required>
+            <label for="parcelas">Parcelas:</label>
+            <select id="parcelas">
+                <option value="12">12x</option>
+                <option value="24">24x</option>
+                <option value="36">36x</option>
+            </select>
+            <label for="cpf">CPF:</label>
+            <input type="text" id="cpf" required>
+            <button type="button" onclick="simularEmprestimo()">Simular</button>
+        </form>
+        <div id="resultado"></div>
+        <button class="close-btn" onclick="fecharModal()">Fechar</button>
+    </div>
 
-   // Função responsável por aumentar e diminuir as fontes
-window.adjustFontSize = function (value) {
-    console.log('Adjusting font size to:', value); // Log para depuração
-    state.fontSize = value;
-    document.querySelectorAll('body *:not(.accessibility-menu, .accessibility-menu *)').forEach(function (el) {
-        el.style.fontSize = `${state.fontSize}%`;
-    });
-};
+    <script>
+        function abrirModal() {
+            document.getElementById("modalSimulacao").style.display = "block";
+            document.getElementById("modalOverlay").style.display = "block";
+        }
 
-window.increaseFont = function () {
-    if (state.fontSize < 200) {
-        state.fontSize += 10;
-        adjustFontSize(state.fontSize);
-        document.getElementById('fontSizeSlider').value = state.fontSize;
-    }
-};
+        function fecharModal() {
+            document.getElementById("modalSimulacao").style.display = "none";
+            document.getElementById("modalOverlay").style.display = "none";
+        }
 
-window.decreaseFont = function () {
-    if (state.fontSize > 80) {
-        state.fontSize -= 10;
-        adjustFontSize(state.fontSize);
-        document.getElementById('fontSizeSlider').value = state.fontSize;
-    }
-};
+        function simularEmprestimo() {
+            let valor = document.getElementById("valor").value;
+            let parcelas = document.getElementById("parcelas").value;
+            let cpf = document.getElementById("cpf").value;
 
-// Ajuste do espaço entre as letras
-window.adjustLetterSpacing = function (value) {
-    console.log('Adjusting letter spacing to:', value); // Log para depuração
-    state.letterSpacing = value;
-    document.querySelectorAll('body *:not(.accessibility-menu, .accessibility-menu *)').forEach(function (el) {
-        el.style.letterSpacing = `${state.letterSpacing}px`;
-    });
-    document.getElementById('letterSpacingLabel').textContent = `Espaçamento: ${state.letterSpacing}px`;
-};
-
-window.increaseLetterSpacing = function () {
-    if (state.letterSpacing < 10) {
-        state.letterSpacing += 1;
-        adjustLetterSpacing(state.letterSpacing);
-        document.getElementById('letterSpacingSlider').value = state.letterSpacing;
-    }
-};
-
-window.decreaseLetterSpacing = function () {
-    if (state.letterSpacing > 0) {
-        state.letterSpacing -= 1;
-        adjustLetterSpacing(state.letterSpacing);
-        document.getElementById('letterSpacingSlider').value = state.letterSpacing;
-    }
-};
-
-// Ajuste o espaço entre as linhas
-window.adjustLineHeight = function (value) {
-    console.log('Adjusting line height to:', value); // Log para depuração
-    state.lineSpacing = value;
-    document.querySelectorAll('body *:not(.accessibility-menu, .accessibility-menu *)').forEach(function (el) {
-        el.style.lineHeight = value;
-    });
-    document.getElementById('lineHeightLabel').textContent = `Altura: ${state.lineSpacing}`;
-};
-
-window.increaseLineSpacing = function () {
-    if (state.lineSpacing < 2) {
-        state.lineSpacing += 0.1;
-        adjustLineHeight(state.lineSpacing);
-        document.getElementById('lineSpacingSlider').value = state.lineSpacing;
-    }
-};
-
-window.decreaseLineSpacing = function () {
-    if (state.lineSpacing > 1) {
-        state.lineSpacing -= 0.1;
-        adjustLineHeight(state.lineSpacing);
-        document.getElementById('lineSpacingSlider').value = state.lineSpacing;
-    }
-};
-
-    // Funções para alternar modos e aplicar estilos selecionados
-    // Modo Escuro
-    window.toggleDarkMode = function() {
-        state.isDarkModeActive = !state.isDarkModeActive;
-        document.body.classList.toggle('dark-mode', state.isDarkModeActive);
-        saveSettings();
-    };
-
-    // Alto Contraste
-    window.toggleHighContrast = function() {
-        state.isHighContrastActive = !state.isHighContrastActive;
-        document.body.classList.toggle('high-contrast', state.isHighContrastActive);
-        saveSettings();
-    };
-
-    // Tons de Cinza
-    window.toggleGrayScale = function() {
-        state.isGrayScaleActive = !state.isGrayScaleActive;
-        document.body.classList.toggle('grayscale', state.isGrayScaleActive);
-        saveSettings();
-    };
-
-   // Função para Contraste Negativo
-   window.toggleNegativeContrast = function() {
-    state.isNegativeContrastActive = !state.isNegativeContrastActive;
-    document.body.classList.toggle('negative-contrast', state.isNegativeContrastActive);
-    saveSettings();
-};
-
-     // Ferramentas de leitura   
-
-    // Função régua de leitura
-    window.toggleReadingRuler = function () {
-        state.isReadingRulerActive = !state.isReadingRulerActive;
-
-        if (state.isReadingRulerActive) {
-            const ruler = document.createElement('div');
-            ruler.id = 'readingRuler';
-            ruler.style.position = 'fixed';
-            ruler.style.width = '100%';
-            ruler.style.height = '40px';
-            ruler.style.backgroundColor = 'rgba(255, 255, 0, 0.5)';
-            ruler.style.border = '2px solid rgba(0, 0, 0, 0.3)';
-            ruler.style.zIndex = '1000';
-            ruler.style.pointerEvents = 'none';
-            document.body.appendChild(ruler);
-
-            if (state.readingRulerMode === 'móvel') {
-                document.addEventListener('mousemove', moveRuler);
-            } else {
-                setRulerFixed(ruler);
+            if (!valor || !parcelas || !cpf) {
+                alert('Por favor, preencha todos os campos.');
+                return;
             }
-        } else {
-            const ruler = document.getElementById('readingRuler');
-            if (ruler) ruler.remove();
-            document.removeEventListener('mousemove', moveRuler);
+
+            let chaveAES = "chaveSegura1234567890123456";
+            let cpfCriptografado = CryptoJS.AES.encrypt(cpf, chaveAES).toString();
+
+            fetch('api/simulacao.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ valor, parcelas, cpf: cpfCriptografado })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("resultado").innerHTML = `<p>Parcela mensal: R$ ${data.parcela}</p>`;
+            })
+            .catch(error => console.error('Erro:', error));
         }
-    };
+    </script>
+    <?php
+// API Simulação
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = json_decode(file_get_contents("php://input"), true);
+    $valor = $input['valor'];
+    $parcelas = $input['parcelas'];
+    $cpfCriptografado = $input['cpf'];
 
-    function moveRuler(event) {
-        const ruler = document.getElementById('readingRuler');
-        if (ruler) {
-            ruler.style.top = `${event.clientY - 20}px`;
-        }
-    }
+    $chaveAES = "chaveSegura1234567890123456";
+    $cpf = openssl_decrypt(base64_decode($cpfCriptografado), 'aes-256-cbc', $chaveAES, 0, substr($chaveAES, 0, 16));
 
-    function setRulerFixed(ruler) {
-        ruler.style.top = '50%';
-        ruler.style.transform = 'translateY(-50%)';
-    }
-
-  // Função para Máscara de Leitura
-window.toggleReadingMask = function () {
-    state.isReadingMaskActive = !state.isReadingMaskActive;
-    console.log('Reading Mask Active:', state.isReadingMaskActive); // Log para depuração
-
-    if (state.isReadingMaskActive) {
-        const mask = document.createElement('div');
-        mask.id = 'readingMask';
-        mask.style.position = 'fixed';
-        mask.style.width = '100%';
-        mask.style.height = '100%';
-        mask.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-        mask.style.pointerEvents = 'none';
-        mask.style.zIndex = '1000';
-
-        const hole = document.createElement('div');
-        hole.style.position = 'absolute';
-        hole.style.width = '100%';
-        hole.style.height = '120px';
-        hole.style.backgroundColor = 'transparent'; // Faixa transparente
-        hole.style.boxShadow = '0 0 0 9999px rgba(0, 0, 0, 0.8)'; // Efeito de máscara
-        hole.style.top = '50%';
-        hole.style.transform = 'translateY(-50%)';
-        mask.appendChild(hole);
-
-        document.body.appendChild(mask);
-        console.log('Reading Mask Created'); // Log para depuração
-
-        if (state.readingMaskMode === 'móvel') {
-            document.addEventListener('mousemove', moveMask);
-        } else {
-            setMaskFixed(hole);
-        }
-    } else {
-        const mask = document.getElementById('readingMask');
-        if (mask) mask.remove();
-        document.removeEventListener('mousemove', moveMask);
-        console.log('Reading Mask Removed'); // Log para depuração
-    }
-};
-
-function moveMask(event) {
-    const hole = document.querySelector('#readingMask div');
-    if (hole) {
-        hole.style.top = `${event.clientY - 60}px`;
-    }
+    $api_url = "https://api.serasaexperian.com/simulacao";
+    $response = file_get_contents($api_url . "?valor=$valor&parcelas=$parcelas&cpf=$cpf");
+    echo $response;
 }
+?>
 
-function setMaskFixed(hole) {
-    hole.style.top = '50%';
-    hole.style.transform = 'translateY(-50%)';
-}
+    <!-- Seção Dúvidas Frequentes -->
+    <section id="faq" class="faq section-bg">
+        <div class="container" data-aos="fade-up">
+            <div class="section-title">
+                <h2>Dúvidas Frequentes</h2>
+            </div>
+            <div class="faq-list" style="font-size: 14px;">
+                <ul>
+                    <li data-aos="fade-up">
+                        <i class="bx bx-help-circle icon-help"></i>
+                        <a data-bs-toggle="collapse" class="collapse show" data-bs-target="#check1" style="width: 100%;">
+                            Em que área a empresa opera?
+                            <i class="bx bx-chevron-down icon-show"></i>
+                            <i class="bx bx-chevron-up icon-close"></i>
+                        </a>
+                        <div id="check1" class="collapse show" data-bs-parent=".faq-list">
+                            <p>Operamos como prestadores de serviços, há mais de 15 anos nas áreas de Crédito Consignado, Intermediação de Negócios, Consultoria Financeira e Cobranças.</p>
+                        </div>
+                    </li>
 
-// Alterna entre os modos "móvel" e "fixo" para régua e máscara
-window.toggleRulerMode = function() {
-    state.readingRulerMode = state.readingRulerMode === 'móvel' ? 'fixo' : 'móvel';
-    if (state.isReadingRulerActive) toggleReadingRuler();
-    toggleReadingRuler();
-};
+                    <li data-aos="fade-up" data-aos-delay="100">
+                        <i class="bx bx-help-circle icon-help"></i>
+                        <a data-bs-toggle="collapse" data-bs-target="#check2" class="collapsed" style="width: 100%;">
+                            Porquê escolher a CONFINTER?
+                            <i class="bx bx-chevron-down icon-show"></i>
+                            <i class="bx bx-chevron-up icon-close"></i>
+                        </a>
+                        <div id="check2" class="collapse" data-bs-parent=".faq-list">
+                            <p>Você terá um atendimento rápido e prático em todo território nacional. Nossos profissionais são dinâmicos e altamente qualificados, oferecendo suporte eficiente, soluções práticas com foco em resultados.</p>
+                        </div>
+                    </li>
 
-window.toggleMaskMode = function() {
-    state.readingMaskMode = state.readingMaskMode === 'móvel' ? 'fixo' : 'móvel';
-    if (state.isReadingMaskActive) toggleReadingMask();
-    toggleReadingMask();
-};
+                    <li data-aos="fade-up" data-aos-delay="200">
+                        <i class="bx bx-help-circle icon-help"></i>
+                        <a data-bs-toggle="collapse" data-bs-target="#check3" class="collapsed" style="width: 100%;">
+                            O que é empréstimo consignado?
+                            <i class="bx bx-chevron-down icon-show"></i>
+                            <i class="bx bx-chevron-up icon-close"></i>
+                        </a>
+                        <div id="check3" class="collapse" data-bs-parent=".faq-list">
+                            <p>O consignado é uma modalidade de crédito em que os pagamentos são descontados automaticamente do salário do servidor ou do benefício do INSS do tomador. Por conta dessa dinâmica, a taxa de inadimplência é baixa e o risco para os bancos muito pequeno, e é isso que faz com que o crédito consignado tenha uma das menores taxas do mercado.</p>
+                        </div>
+                    </li>
 
-    // Função que altera o tipo de Fonte
-    window.changeFontFamily = function(font) {
-        document.body.style.fontFamily = font;  // Altera a família da fonte do conteúdo
-    };     
+                    <li data-aos="fade-up" data-aos-delay="300">
+                        <i class="bx bx-help-circle icon-help"></i>
+                        <a data-bs-toggle="collapse" data-bs-target="#check4" class="collapsed" style="width: 100%;">
+                            Quem pode solicitar crédito consignado?
+                            <i class="bx bx-chevron-down icon-show"></i>
+                            <i class="bx bx-chevron-up icon-close"></i>
+                        </a>
+                        <div id="check4" class="collapse" data-bs-parent=".faq-list">
+                            <p>Aqui na CONFINTER, o crédito consignado está disponível para alguns públicos, entre eles: Beneficiário do INSS (BPC/LOAS), Servidores Públicos Municipais, Estaduais e Federais do SIAPE, Militares das Forças Armadas e Aposentados e Pensionistas do INSS.</p>
+                        </div>
+                    </li>
 
- // Lupa
-window.toggleMagnifier = function() {
-    state.isMagnifying = !state.isMagnifying;
-    if (state.isMagnifying) {
-        document.body.style.cursor = 'zoom-in';
-        document.addEventListener('click', startMagnifying);
-        document.addEventListener('contextmenu', stopMagnifying);
-    } else {
-        document.body.style.cursor = 'default';
-        document.removeEventListener('click', startMagnifying);
-        document.removeEventListener('contextmenu', stopMagnifying);
-        resetZoom();
-    }
-};
+                    <li data-aos="fade-up" data-aos-delay="400">
+                        <i class="bx bx-help-circle icon-help"></i>
+                        <a data-bs-toggle="collapse" data-bs-target="#check5" class="collapsed" style="width: 100%;">
+                            Quais são as taxas de juros?
+                            <i class="bx bx-chevron-down icon-show"></i>
+                            <i class="bx bx-chevron-up icon-close"></i>
+                        </a>
+                        <div id="check5" class="collapse" data-bs-parent=".faq-list">
+                            <p>Oferecemos Empréstimo Consignado com taxas personalizadas que podem variar dependendo do tipo de convênio, operação, prazo, valor solicitado e perfil do cliente. As taxas de juros máximas são de 1.72% ao mês no empréstimo consignado para aposentado e/ou pensionista do INSS e Beneficiário do INSS (BPC/LOAS); e para Servidores Públicos à partir de 1.93% ao mês.</p>
+                        </div>
+                    </li>
 
-function startMagnifying(event) {
-    const zoomedElement = document.elementFromPoint(event.clientX, event.clientY);
-    if (zoomedElement) {
-        let currentScale = parseFloat(zoomedElement.getAttribute('data-scale')) || 1;
-        if (currentScale < 3) {
-            currentScale += 0.5;
-        } else {
-            currentScale = 1;
-        }
-        zoomedElement.style.transform = `scale(${currentScale})`;
-        zoomedElement.style.transition = 'transform 0.2s ease';
-        zoomedElement.setAttribute('data-scale', currentScale);
-        zoomedElement.classList.add('zoomed');
-    }
-}
+                    <li data-aos="fade-up" data-aos-delay="500">
+                        <i class="bx bx-help-circle icon-help"></i>
+                        <a data-bs-toggle="collapse" data-bs-target="#check6" class="collapsed" style="width: 100%;">
+                            Como é feita a análise de crédito?
+                            <i class="bx bx-chevron-down icon-show"></i>
+                            <i class="bx bx-chevron-up icon-close"></i>
+                        </a>
+                        <div id="check6" class="collapse" data-bs-parent=".faq-list">
+                            <p>Prezando sempre pela saúde financeira, optamos pelas melhores estratégias de acordo com a gama de bancos parceiros e financeiras, buscando o melhor custo-benefício para nossos clientes.</p>
+                        </div>
+                    </li>
 
-function stopMagnifying(event) {
-    event.preventDefault(); // Previne o menu de contexto padrão
-    const zoomedElement = document.elementFromPoint(event.clientX, event.clientY);
-    if (zoomedElement && zoomedElement.classList.contains('zoomed')) {
-        zoomedElement.style.transform = 'scale(1)';
-        zoomedElement.style.transition = 'transform 0.2s ease';
-        zoomedElement.removeAttribute('data-scale');
-        zoomedElement.classList.remove('zoomed');
-    }
-}
+                    <li data-aos="fade-up" data-aos-delay="600">
+                        <i class="bx bx-help-circle icon-help"></i>
+                        <a data-bs-toggle="collapse" data-bs-target="#check7" class="collapsed" style="width: 100%;">
+                            Como a CONFINTER pode me ajudar hoje?
+                            <i class="bx bx-chevron-down icon-show"></i>
+                            <i class="bx bx-chevron-up icon-close"></i>
+                        </a>
+                        <div id="check7" class="collapse" data-bs-parent=".faq-list">
+                            <p>A CONFINTER atua também como Correspondente Digital autorizado pelo Banco Central e pode intermediar operações de crédito ajudando você, consumidor, a escolher as melhores opções de crédito disponíveis para seu perfil. Conosco, você não precisa sair de casa ou do trabalho perdendo tempo indo até o banco, enfrentando filas e burocracia! Nós fazemos todo o processo e acompanhamos o seu caso, digitalmente até a liberação do crédito em conta.</p>
+                        </div>
+                    </li>
 
-function resetZoom() {
-    const zoomedElements = document.querySelectorAll('.zoomed');
-    zoomedElements.forEach(el => {
-        el.style.transform = 'scale(1)';
-        el.style.transition = 'transform 0.2s ease';
-        el.removeAttribute('data-scale');
-        el.classList.remove('zoomed');
-    });
-}
+                    <li data-aos="fade-up" data-aos-delay="700">
+                        <i class="bx bx-help-circle icon-help"></i>
+                        <a data-bs-toggle="collapse" data-bs-target="#check8" class="collapsed" style="width: 100%;">
+                            Como faço para assinar o meu contrato?
+                            <i class="bx bx-chevron-down icon-show"></i>
+                            <i class="bx bx-chevron-up icon-close"></i>
+                        </a>
+                        <div id="check8" class="collapse" data-bs-parent=".faq-list">
+                            <p>A assinatura é de forma digital, podendo ser enviado um link por WhatsApp ou SMS, enviado para o seu número de celular informado no formulário. A maioria dos bancos exigem: o envio do documento de identidade; o aceite (SIM) na CCB: essa etapa o cliente verifica se todas as condições contratadas e precisa dar o aceite para seguir para a assinatura; tirar uma selfie (foto de si mesmo) que é a etapa de assinatura digital do cliente. Entretanto, essa modalidade pode variar de acordo com as exigências de cada Instituição Financeira.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    <!-- Fim da Seção Dúvidas Frequentes -->
 
-document.addEventListener('DOMContentLoaded', function () {
-    const state = {
-        isTextReaderActive: false,
-        textReaderSpeed: 'normal',
-    };
-
-// Função Leitura de Texto acessível globalmente
-    window.toggleTextReader = function() {
-        state.isTextReaderActive = !state.isTextReaderActive;
-        console.log('Text Reader Active:', state.isTextReaderActive); // Log para depuração
-
-        if (state.isTextReaderActive) {
-            document.addEventListener('mouseover', startTextReader);
-            document.addEventListener('mouseout', stopTextReader);
-            document.addEventListener('mouseup', handleTextSelection);
-        } else {
-            document.removeEventListener('mouseover', startTextReader);
-            document.removeEventListener('mouseout', stopTextReader);
-            document.removeEventListener('mouseup', handleTextSelection);
-            speechSynthesis.cancel();
-        }
-        saveSettings();
-    };
-
-    function startTextReader(event) {
-        const target = event.target;
-        if (target && target.textContent.trim()) {
-            target.textReaderTimeout = setTimeout(() => {
-                const utterance = new SpeechSynthesisUtterance(target.textContent);
-                utterance.rate = state.textReaderSpeed === 'normal' ? 1 : state.textReaderSpeed === 'fast' ? 1.5 : 0.75;
-                console.log('Speaking:', target.textContent); // Log para depuração
-                speechSynthesis.speak(utterance);
-            }, 3000); // 3 segundos
-        }
-    }
-
-    function stopTextReader(event) {
-        const target = event.target;
-        if (target && target.textReaderTimeout) {
-            clearTimeout(target.textReaderTimeout);
-            speechSynthesis.cancel();
-            console.log('Speech synthesis canceled'); // Log para depuração
-        }
-    }
-
-    function handleTextSelection() {
-        const selection = window.getSelection().toString();
-        if (selection) {
-            const utterance = new SpeechSynthesisUtterance(selection);
-            utterance.rate = state.textReaderSpeed === 'normal' ? 1 : state.textReaderSpeed === 'fast' ? 1.5 : 0.75;
-            console.log('Speaking selected text:', selection); // Log para depuração
-            speechSynthesis.speak(utterance);
-        }
-    }
-
-    function setReaderSpeed(speed) {
-        state.textReaderSpeed = speed;
-        const speedLabel = document.getElementById('textReaderSpeedLabel');
-        if (speedLabel) {
-            speedLabel.textContent = `(${speed.charAt(0).toUpperCase() + speed.slice(1)})`;
-        }
-        console.log('Reader speed set to:', speed); // Log para depuração
-        saveSettings();
-    }
-
-    const textReaderIcon = document.getElementById('textReaderIcon');
-    if (textReaderIcon) {
-        textReaderIcon.addEventListener('click', function() {
-            if (state.textReaderSpeed === 'normal') {
-                setReaderSpeed('fast');
-            } else if (state.textReaderSpeed === 'fast') {
-                setReaderSpeed('slow');
-            } else {
-                setReaderSpeed('normal');
+    <!-- ======= Seção Enviar Depoimentos ======= -->
+    <section id="envdepoimentos" class="testimonials">
+        <div class="container-fluid container-center">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-sm-8 col-xs-12 text-center">
+                    <div class="section-headline text-center">
+                        <h2 class="br">Enviar Depoimento</h2>
+                    </div>
+                    <!-- Adicionando um identificador único ao formulário -->
+                    <form id="form-depoimento" action="php/enviar_depoimento.php" method="POST">
+                        <div class="form-group">
+                            <input type="text" name="nome" class="br form-control" id="nome" placeholder="Insira o nome, em branco enviará como Anônimo" data-rule="minlen:4" data-msg="" />
+                            <div class="br validation"></div>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="br form-control" name="mensagem" rows="5" data-rule="required" data-msg="Por favor escreva algo para nós" placeholder="Mensagem"></textarea>
+                            <!-- Adicionando um identificador único ao elemento onde a mensagem de erro será exibida -->
+                            <div id="erro-mensagem" class="text-danger">
+                                <?php
+                                // Verificar se a variável de sessão erro_mensagem está definida
+                                if (isset($_SESSION['erro_mensagem'])) {
+                                    // Exibir a mensagem de erro
+                                    echo $_SESSION['erro_mensagem'];
+                                    // Remover a variável de sessão para que a mensagem não seja exibida novamente após atualizar a página
+                                    unset($_SESSION['erro_mensagem']);
+                                }
+                                ?>
+                            </div>
+                            <div class="br validation"></div>
+                            <div class="en validation"></div>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Enviar Depoimento</button>
+                        </div>
+                    </form>
+                    <script>
+                        $('#form-depoimento').submit(function (event) {
+                            event.preventDefault(); // Impede o envio padrão do formulário
+                            // Validação e lógica de envio do formulário
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Depoimento Enviado',
+                                text: 'Seu depoimento foi enviado com sucesso!',
+                                timer: 3000,
+                                showConfirmButton: false
+                            }).then(function() {
+                                // Aqui você pode submeter o formulário após o alerta
+                                $('#form-depoimento')[0].submit();
+                            });
+                        });
+                    </script>
+                </div>
+            </div>
+        </div><!-- Fim Item Depoimentos -->
+        <script>
+    window.onload = function() {
+        // Verificar se a URL contém o parâmetro de erro
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('erro')) {
+            // Rolar a página até a mensagem de erro
+            const erroMensagem = document.getElementById('erro-mensagem');
+            if (erroMensagem) {
+                erroMensagem.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
-            console.log('Text reader speed toggled'); // Log para depuração
-        });
-    }
+        }
+    };
+</script>
+    <!-- Fim da Seção Enviar Depoimentos -->
 
-    function saveSettings() {
-        localStorage.setItem('accessibilityState', JSON.stringify(state));
-    }
-});
+    <!-- Seção Depoimentos -->
+    <section id="depoimentos" class="testimonials">
+        <div class="container" data-aos="fade-up">
+            <div class="section-title">
+                <h2>Depoimentos</h2>
+            </div>
+            <div class="testimonials-slider swiper" data-aos="fade-up" data-aos-delay="100">
+                <div class="swiper-wrapper darkmode-white-text">
+                    <?php
+                    $sql = "SELECT nome, mensagem FROM depoimentos WHERE status_mod = 'aprovado'";
+                    $result = mysqli_query($conexao, $sql);
 
-   // Função de Saturação
-   window.toggleSaturation = function() {
-    if (state.saturationLevel < 10) {
-        state.saturationLevel += 1;
-    } else {
-        state.saturationLevel = 1;
-    }
-    document.body.style.filter = `saturate(${state.saturationLevel})`;
-    saveSettings();
-};
+                    if (mysqli_num_rows($result) > 0) {
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            $nome = $row['nome'] ? $row['nome'] : "Anônimo";
+                            $mensagem = $row['mensagem'];
+                    ?>
+                    <div class="swiper-slide">
+                        <div class="testimonial-item">
+                            <p>
+                                <i class="bx bxs-quote-alt-left quote-icon-left"></i>
+                                <?php echo $mensagem; ?>
+                                <i class="bx bxs-quote-alt-right quote-icon-right"></i>
+                            </p>
+                            <h3><?php echo $nome; ?></h3>
+                        </div>
+                    </div><!-- Fim Item Depoimentos -->
+                    <?php
+                        }
+                    } else {
+                        echo "<div class='swiper-slide'><div class='testimonial-item'><p>Nenhum depoimento aprovado disponível.</p></div></div>";
+                    }
+                    ?>
+                </div>
+                <div class="swiper-pagination"></div>
+            </div>
+        </div>
+    </section>
+    <!-- Fim da Seção Depoimentos -->
 
-// Funções para modos específicos (Dislexia, TDAH, Epilepsia, Daltonismo, Habilidades Motoras)
-// Função para alternar o modo Dislexia
-window.toggleDyslexiaMode = function() {
-    state.dyslexiaMode = !state.dyslexiaMode;
-    document.body.classList.toggle('dyslexia-mode', state.dyslexiaMode);
+    <!-- Seção Contato -->
+    <section id="chegar" class="contact">
+        <div class="container" data-aos="fade-up">
+            <div class="section-headline text-center">
+                <h2>Contato</h2>
+            </div>
+            <div>
+                <iframe style="border:0; width: 100%; height: 270px;" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3657.674620432733!2d-46.34657878502169!3d-23.529135784679013!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce43de0d92a6f5%3A0x8f85eeb0c19e3c32!2sMarina%20La%20Regina!5e0!3m2!1sen!2sus!4v1648523258379!5m2!1sen!2sus&hl=pt-BR" frameborder="0" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+            </div>
+            <div class="row mt-5">
+                <div class="col-lg-4 col-md-6 footer-contact darkmode-white-text">
+                    <h3><img src="assets/img/logo01-black.png" alt="Logo da empresa" width="125px"></h3>
+                    <p>
+                        Rua Maria la Regina<br>
+                        Poá, São Paulo<br>
+                        Brasil <br><br>
+                        <ul>
+                            <li><i class="bx bx-phone-outgoing"></i> <a href="#">(11)94801-6298</a></li>
+                            <li><i class="bx bx-mail-send"></i> <a href="mailto:contato@confinter.com.br">contato@confinter.com.br</a></li>                                                 
+                        </ul>
+                    </p>
+                </div>
+                <div class="col-lg-3 col-md-6 footer-links darkmode-white-text">
+                   <h4>Links Úteis</h4>
+                    <ul>
+                        <li><i class="bx bx-chevron-right"></i> <a href="#sobre">Sobre</a></li>
+                        <li><i class="bx bx-chevron-right"></i> <a href="#valores">Nossos Valores</a></li>
+                        <li><i class="bx bx-chevron-right"></i> <a href="#servicos">Serviços</a></li>
+                        <li><i class="bx bx-chevron-right"></i> <a href="#requi">Requisições</a></li>
+                        <li><i class="bx bx-chevron-right"></i> <a href="#faq">Dúvidas</a></li>
+                        <li><i class="bx bx-chevron-right"></i> <a href="#depoimentos">Depoimentos</a></li>
+                        <li><i class="bx bx-chevron-right"></i> <a href="#chegar">Como Chegar</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-5 col-md-6 footer-newsletter darkmode-white-text">
+                    <h4>Para Informações</h4>
+                    <p>Cadastre seu E-mail</p>
+                    <form action="" method="post">
+                        <input type="email" name="email" placeholder="Seu e-mail"><input class="btn btn-primary" type="submit" value="Inscreva-se">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Fim da Seção Contato -->
+</main>
 
-    if (state.dyslexiaMode) {
-        applyDyslexiaSettings();
-    } else {
-        removeDyslexiaSettings();
-    }
-    saveSettings();
-};
+<!-- Início do Footer -->
+<footer id="footer">
+    <div class="footer-top">       
+    <div class="container d-md-flex py-4">
+        <div class="me-md-auto text-center text-md-start">
+            <div class="copyright darkmode-white-text">
+                &copy; Copyright <strong><span>CONFINTER <?php echo date("Y"); ?></span></strong>. Todos os Direitos Reservados.
+            </div>
+            <div class="credits">
+                Desenvolvido por <a href="https://github.com/finandolopes/DRP01-Projeto-Integrador-em-Computa-o-II-Turma-006">DRP01 Projeto Integrador em Computação II Turma 006</a> 
+            </div>
+        </div>           
+    </div>
+</footer>
+<!-- Fim do Footer -->   
 
-function applyDyslexiaSettings() {
-    // Alterar a fonte para "OpenDyslexic"
-    document.body.style.fontFamily = 'OpenDyslexic, Arial, sans-serif';
+<!-- Elementos adicionais -->
+<div id="preloader"></div>
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center" aria-label="Voltar ao topo"><i class="bi bi-arrow-up-short"></i></a>
 
-    // Ajustar espaçamento entre letras, palavras e linhas
-    document.body.style.letterSpacing = '0.12em';
-    document.body.style.wordSpacing = '0.16em';
-    document.body.style.lineHeight = '1.5';
+<!-- Vendor JS Files -->
+<script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+<script src="assets/vendor/aos/aos.js"></script>
+<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+<script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+<script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+<script src="assets/vendor/php-email-form/validate.js"></script>
+<script src="lib/owlcarousel/owl.carousel.min.js"></script>
+<script src="lib/venobox/venobox.min.js"></script>
+<script src="lib/nivo-slider/js/jquery.nivo.slider.min.js"></script>
 
-    // Sublinhado para links
-    document.querySelectorAll('a').forEach(function(link) {
-        link.style.textDecoration = 'underline';
+<!-- Template Main JS File -->
+<script src="assets/js/main.js"></script>
+
+<!-- Initialize Nivo Slider -->
+<script>
+    $(window).on('load', function() {
+        $('#ensign-nivoslider').nivoSlider();
     });
+</script>
 
-    // Adicionar régua de leitura
-    toggleReadingRuler(true);
-}
-
-function removeDyslexiaSettings() {
-    // Reverter as alterações de fonte e espaçamento
-    document.body.style.fontFamily = '';
-    document.body.style.letterSpacing = '';
-    document.body.style.wordSpacing = '';
-    document.body.style.lineHeight = '';
-
-    // Remover sublinhado de links
-    document.querySelectorAll('a').forEach(function(link) {
-        link.style.textDecoration = '';
-    });
-
-    // Remover régua de leitura
-    toggleReadingRuler(false);
-}
-
-// Função para alternar a régua de leitura
-window.toggleReadingRuler = function(forceState) {
-    if (typeof forceState === 'boolean') {
-        state.isReadingRulerActive = forceState;
-    } else {
-        state.isReadingRulerActive = !state.isReadingRulerActive;
-    }
-
-    if (state.isReadingRulerActive) {
-        const ruler = document.createElement('div');
-        ruler.id = 'readingRuler';
-        ruler.style.position = 'fixed';
-        ruler.style.width = '100%';
-        ruler.style.height = '40px';
-        ruler.style.backgroundColor = 'rgba(255, 255, 0, 0.5)';
-        ruler.style.border = '2px solid rgba(0, 0, 0, 0.3)';
-        ruler.style.zIndex = '1000';
-        ruler.style.pointerEvents = 'none';
-        document.body.appendChild(ruler);
-
-        document.addEventListener('mousemove', moveRuler);
-    } else {
-        const ruler = document.getElementById('readingRuler');
-        if (ruler) ruler.remove();
-        document.removeEventListener('mousemove', moveRuler);
-    }
-};
-
-function moveRuler(event) {
-    const ruler = document.getElementById('readingRuler');
-    if (ruler) {
-        ruler.style.top = `${event.clientY - 20}px`;
-    }
-}
-
-function saveSettings() {
-    localStorage.setItem('accessibilityState', JSON.stringify(state));
-}
-
-// Função para alternar o modo TDAH
-window.toggleTDAMode = function () {
-    state.tdaMode = !state.tdaMode;
-    document.body.classList.toggle('tda-mode', state.tdaMode);
-
-    if (state.tdaMode) {
-        toggleReadingRuler(); // Ativa a régua de leitura
-        toggleTextReader(true); // Ativa a leitura de texto
-        startPomodoro(); // Inicia o modo Pomodoro
-    } else {
-        toggleReadingRuler(); // Desativa a régua de leitura
-        toggleTextReader(false); // Desativa a leitura de texto
-        stopPomodoro(); // Para o modo Pomodoro
-    }
-};
-
-// Função para iniciar o modo Pomodoro
-function startPomodoro() {
-    const pomodoroDuration = 25 * 60 * 1000; // 25 minutos
-    const breakDuration = 5 * 60 * 1000; // 5 minutos
-
-    function startBreak() {
-        alert('Hora do intervalo! 5 minutos de descanso.');
-        setTimeout(startPomodoro, breakDuration);
-    }
-
-    alert('Modo Pomodoro iniciado! 25 minutos de foco.');
-    setTimeout(startBreak, pomodoroDuration);
-}
-
-// Função para parar o modo Pomodoro
-function stopPomodoro() {
-    alert('Modo Pomodoro desativado.');
-    // Adicione lógica para parar o modo Pomodoro, se necessário
-}
-
-// Função para leitura de texto com destaque
-function startTextReader(event) {
-    const target = event.target;
-    if (target && target.innerText.trim() && !target.closest('.accessibility-menu')) {
-        target.textReaderTimeout = setTimeout(() => {
-            const utterance = new SpeechSynthesisUtterance(target.innerText);
-            utterance.rate = state.textReaderSpeed === 'normal' ? 1 : state.textReaderSpeed === 'fast' ? 1.5 : state.textReaderSpeed === 'slow' ? 0.75 : 1;
-            utterance.onboundary = function(event) {
-                const charIndex = event.charIndex;
-                highlightText(target, charIndex);
-            };
-            console.log('Speaking:', target.innerText); // Log para depuração
-            speechSynthesis.speak(utterance);
-        }, 3000); // 3 segundos
-    }
-}
-
-function highlightText(element, charIndex) {
-    const text = element.innerText;
-    const before = text.slice(0, charIndex);
-    const after = text.slice(charIndex);
-    element.innerHTML = `<span style="background-color: yellow;">${before}</span>${after}`;
-}
-
-function stopTextReader(event) {
-    const target = event.target;
-    if (target && target.textReaderTimeout) {
-        clearTimeout(target.textReaderTimeout);
-        speechSynthesis.cancel();
-        console.log('Speech synthesis canceled'); // Log para depuração
-        removeHighlight(target);
-    }
-}
-
-function removeHighlight(element) {
-    element.innerHTML = element.innerText;
-}
-
-// Função para alternar a leitura de texto
-window.toggleTextReader = function(forceState) {
-    if (typeof forceState === 'boolean') {
-        state.isTextReaderActive = forceState;
-    } else {
-        state.isTextReaderActive = !state.isTextReaderActive;
-    }
-    console.log('Text Reader Active:', state.isTextReaderActive); // Log para depuração
-
-    if (state.isTextReaderActive) {
-        document.addEventListener('mouseover', startTextReader);
-        document.addEventListener('mouseout', stopTextReader);
-    } else {
-        document.removeEventListener('mouseover', startTextReader);
-        document.removeEventListener('mouseout', stopTextReader);
-        speechSynthesis.cancel();
-    }
-    saveSettings();
-};
-
-// Função modo Epilepsia
-window.toggleEpilepsyMode = function() {
-    state.epilepsyMode = !state.epilepsyMode;
-    document.body.classList.toggle('epilepsy-mode', state.epilepsyMode);
-
-    if (state.epilepsyMode) {
-        applyEpilepsySettings();
-        alert('Modo Epilepsia Ativado');
-    } else {
-        removeEpilepsySettings();
-        alert('Modo Epilepsia Desativado');
-    }
-    saveSettings();
-};
-
-function applyEpilepsySettings() {
-    // Desativar animações e efeitos visuais
-    const style = document.createElement('style');
-    style.id = 'epilepsyModeStyles';
-    style.innerHTML = `
-        * {
-            animation: none !important;
-            transition: none !important;
-        }
-        img, video {
-            filter: brightness(0.8) contrast(0.8);
-        }
-        body {
-            filter: brightness(0.8) contrast(0.8);
-        }
-    `;
-    document.head.appendChild(style);
-
-    // Adicionar aviso sobre conteúdo com movimento
-    const warning = document.createElement('div');
-    warning.id = 'epilepsyWarning';
-    warning.style.position = 'fixed';
-    warning.style.top = '0';
-    warning.style.left = '0';
-    warning.style.width = '100%';
-    warning.style.backgroundColor = 'red';
-    warning.style.color = 'white';
-    warning.style.textAlign = 'center';
-    warning.style.padding = '10px';
-    warning.style.zIndex = '10000';
-    warning.innerText = 'Aviso: Este site contém conteúdo com movimento e luzes piscantes. Use com cautela.';
-    document.body.appendChild(warning);
-}
-
-function removeEpilepsySettings() {
-    // Reverter desativação de animações e efeitos visuais
-    const style = document.getElementById('epilepsyModeStyles');
-    if (style) style.remove();
-
-    // Remover aviso sobre conteúdo com movimento
-    const warning = document.getElementById('epilepsyWarning');
-    if (warning) warning.remove();
-}
-
-function saveSettings() {
-    localStorage.setItem('accessibilityState', JSON.stringify(state));
-}
-
-// Função para alternar o modo de habilidades motoras
-window.toggleMotorSkillsMode = function() {
-    state.isMotorSkillsModeActive = !state.isMotorSkillsModeActive;
-    document.body.classList.toggle('motor-skills-mode', state.isMotorSkillsModeActive);
-
-    if (state.isMotorSkillsModeActive) {
-        applyMotorSkillsSettings();
-    } else {
-        removeMotorSkillsSettings();
-    }
-    saveSettings();
-};
-
-function applyMotorSkillsSettings() {
-    // Adicionar estilos para navegação por teclado e botões ampliados
-    const style = document.createElement('style');
-    style.id = 'motorSkillsModeStyles';
-    style.innerHTML = `
-        *:focus {
-            outline: 3px solid #007bff !important; /* Focalização visível */
-            outline-offset: 2px;
-        }
-        button, a, input, textarea, select {
-            padding: 15px !important; /* Botões ampliados */
-            margin: 5px !important; /* Espaçamento entre botões */
-            font-size: 1.2em !important; /* Texto maior */
-        }
-        .motor-skills-mode .confirm-click {
-            position: relative;
-        }
-        .motor-skills-mode .confirm-click::after {
-            content: 'Clique novamente para confirmar';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #ffc107;
-            color: #000;
-            padding: 5px;
-            border-radius: 5px;
-            display: none;
-        }
-        .motor-skills-mode .confirm-click.active::after {
-            display: block;
-        }
-    `;
-    document.head.appendChild(style);
-
-    // Adicionar evento para prevenção de acionamento acidental
-    document.querySelectorAll('button, a').forEach(function(el) {
-        el.classList.add('confirm-click');
-        el.addEventListener('click', handleConfirmClick);
-    });
-}
-
-function removeMotorSkillsSettings() {
-    // Reverter estilos para navegação por teclado e botões ampliados
-    const style = document.getElementById('motorSkillsModeStyles');
-    if (style) style.remove();
-
-    // Remover evento para prevenção de acionamento acidental
-    document.querySelectorAll('button, a').forEach(function(el) {
-        el.classList.remove('confirm-click');
-        el.removeEventListener('click', handleConfirmClick);
-    });
-}
-
-function handleConfirmClick(event) {
-    const el = event.currentTarget;
-    if (!el.classList.contains('active')) {
-        event.preventDefault();
-        el.classList.add('active');
-        setTimeout(() => el.classList.remove('active'), 2000); // 2 segundos para confirmar
-    }
-}
-
-function saveSettings() {
-    localStorage.setItem('accessibilityState', JSON.stringify(state));
-}
-
-// Função para alternar o modo de daltonismo
-window.toggleDaltonismMode = function() {
-    state.daltonismMode = (state.daltonismMode + 1) % 4;
-    document.body.classList.remove('protanopia', 'deuteranopia', 'tritanopia');
-    if (state.daltonismMode === 1) {
-        document.body.classList.add('protanopia');
-        document.getElementById('daltonismModeLabel').textContent = '(Protanopia)';
-    } else if (state.daltonismMode === 2) {
-        document.body.classList.add('deuteranopia');
-        document.getElementById('daltonismModeLabel').textContent = '(Deuteranopia)';
-    } else if (state.daltonismMode === 3) {
-        document.body.classList.add('tritanopia');
-        document.getElementById('daltonismModeLabel').textContent = '(Tritanopia)';
-    } else {
-        document.getElementById('daltonismModeLabel').textContent = '(Nenhum)';
-    }
-    saveSettings();
-};
-
-// Adicione os estilos CSS diretamente no JavaScript para manter tudo acoplado
-const daltonismStyle = document.createElement('style');
-daltonismStyle.innerHTML = `
-    .protanopia *:not(.menu):not(.menu *) {
-        filter: url(#protanopia);
-    }
-    .deuteranopia *:not(.menu):not(.menu *) {
-        filter: url(#deuteranopia);
-    }
-    .tritanopia *:not(.menu):not(.menu *) {
-        filter: url(#tritanopia);
-    }
-    .protanopia img:not(.menu img) {
-        filter: url(#protanopia) !important;
-    }
-    .deuteranopia img:not(.menu img) {
-        filter: url(#deuteranopia) !important;
-    }
-    .tritanopia img:not(.menu img) {
-        filter: url(#tritanopia) !important;
-    }
-`;
-document.head.appendChild(daltonismStyle);
-
-// Adicione os filtros SVG para daltonismo
-const svgFilters = `
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
-    <defs>
-        <filter id="protanopia">
-            <feColorMatrix type="matrix" values="0.567, 0.433, 0, 0, 0, 0.558, 0.442, 0, 0, 0, 0, 0.242, 0.758, 0, 0, 0, 0, 0, 1, 0"/>
-        </filter>
-        <filter id="deuteranopia">
-            <feColorMatrix type="matrix" values="0.625, 0.375, 0, 0, 0, 0.7, 0.3, 0, 0, 0, 0, 0.3, 0.7, 0, 0, 0, 0, 0, 1, 0"/>
-        </filter>
-        <filter id="tritanopia">
-            <feColorMatrix type="matrix" values="0.95, 0.05, 0, 0, 0, 0, 0.433, 0.567, 0, 0, 0, 0.475, 0.525, 0, 0, 0, 0, 0, 1, 0"/>
-        </filter>
-    </defs>
-</svg>
-`;
-const svgContainer = document.createElement('div');
-svgContainer.style.display = 'none';
-svgContainer.innerHTML = svgFilters;
-document.body.appendChild(svgContainer);
-
-function saveSettings() {
-    localStorage.setItem('accessibilityState', JSON.stringify(state));
-}
-
-// Função para habilitar/desabilitar o VLibras
-window.toggleLibrasMode = function () {
-    state.isLibrasActive = !state.isLibrasActive;
-
-    if (state.isLibrasActive) {
-        // Verifica se o VLibras já foi carregado
-        if (!window.vlibrasLoaded) {
-            const script = document.createElement('script');
-            script.src = 'https://vlibras.gov.br/app/vlibras-plugin.js';
-            script.defer = true;
-            script.onload = function () {
-                window.VLibras = new window.VLibras.Widget();
-                window.vlibrasLoaded = true;
-                document.querySelector('[vw]').classList.add('enabled');
-            };
-            document.body.appendChild(script);
-        } else {
-            document.querySelector('[vw]').classList.add('enabled');
-        }
-    } else {
-        document.querySelector('[vw]').classList.remove('enabled');
-    }
-
-    saveSettings();
-    document.getElementById('librasModeLabel').textContent = state.isLibrasActive ? '(Ativo)' : '(Inativo)';
-};
+<script src="assets/js/plugin.js"></script>
+<!-- Importar o arquivo de validações JS -->
+<script src="form-validation.js"></script>
+</body>
+</html>
 
 
 
-// Resetar Configurações
-window.resetSettings = function() {
-    state.fontSize = 100;
-    state.letterSpacing = 0;
-}
-
-// Resetar Configurações
-window.resetSettings = function() {
-    state.fontSize = 100;
-    state.letterSpacing = 0;
-    state.lineSpacing = 0;
-    state.isDarkModeActive = false;
-    state.isHighContrastActive = false;
-    state.isGrayScaleActive = false;
-    state.isNegativeContrastActive = false;
-    state.isReadingRulerActive = false;
-    state.isReadingMaskActive = false;
-    state.isMagnifying = false;
-    state.saturationLevel = 1;
-    state.tdaMode = false;
-    state.dyslexiaMode = false;
-    state.epilepsyMode = false;
-    state.isMotorSkillsModeActive = false;
-    state.daltonismMode = 0;
-    state.isTextReaderActive = false;
-
-    document.body.style.fontSize = '100%';
-    document.body.style.letterSpacing = '0px';
-    document.body.style.lineHeight = 'normal';
-    document.body.style.filter = 'none';
-    document.body.classList.remove('dark-mode', 'high-contrast', 'grayscale', 'negative-contrast', 
-                                     'protanopia', 'deuteranopia', 'tritanopia', 'tda-mode', 'dyslexia-mode', 
-                                     'epilepsy-mode', 'motor-skills-mode');
-
-    const ruler = document.getElementById('readingRuler');
-    if (ruler) ruler.remove();
-
-    const mask = document.getElementById('readingMask');
-    if (mask) mask.remove();
-
-    document.body.style.cursor = 'default';
-
-    saveSettings();
-};
-
-    // Exibir ajuda (integrado ao SweetAlert2)
-window.showHelp = function() {
-    Swal.fire({
-        title: 'Ajuda de Acessibilidade',
-        html: `
-            <ul style="text-align: left;">
-                <li><strong>Aumentar Fonte:</strong> Aumenta o tamanho da fonte do texto.</li>
-                <li><strong>Diminuir Fonte:</strong> Diminui o tamanho da fonte do texto.</li>
-                <li><strong>Espaçamento entre Letras:</strong> Ajusta o espaçamento entre as letras do texto.</li>
-                <li><strong>Altura da Linha:</strong> Ajusta a altura das linhas do texto.</li>
-                <li><strong>Modo Escuro:</strong> Alterna o modo escuro para reduzir a luminosidade da tela.</li>
-                <li><strong>Alto Contraste:</strong> Aumenta o contraste do site para melhorar a legibilidade.</li>
-                <li><strong>Contraste Negativo:</strong> Inverte as cores para um contraste negativo.</li>
-                <li><strong>Régua de Leitura:</strong> Mostra uma régua que segue o cursor do mouse para ajudar na leitura.</li>
-                <li><strong>Máscara de Leitura:</strong> Adiciona uma máscara opaca com uma faixa para destacar o texto.</li>
-                <li><strong>Lupa:</strong> Amplia o conteúdo sob o cursor para melhor visualização.</li>
-                <li><strong>Leitura de Texto:</strong> Lê em voz alta o texto selecionado ou sob o cursor.</li>
-                <li><strong>Saturação:</strong> Ajusta o nível de saturação das cores do site.</li>
-                <li><strong>Dislexia:</strong> Ajusta a fonte e sublinha links para melhorar a legibilidade para pessoas com dislexia.</li>
-                <li><strong>TDAH:</strong> Bloqueia animações e ativa a régua de leitura e leitura de texto para ajudar pessoas com TDAH.</li>
-                <li><strong>Anti-Epilepsia:</strong> Desativa animações e sons para evitar gatilhos de epilepsia.</li>
-                <li><strong>Habilidades Motoras:</strong> Ativa a navegação por teclado com maior visibilidade e botões ampliados.</li>
-                <li><strong>Daltonismo:</strong> Alterna entre modos de daltonismo (Protanopia, Deuteranopia, Tritanopia) para ajustar as cores do site.</li>
-                <li><strong>Resetar:</strong> Reseta todas as configurações de acessibilidade para os valores padrão.</li>
-            </ul>
-        `,
-        icon: 'info',
-        confirmButtonText: 'Ok'
-    });
-};
-
-// Atalhos de Teclado
-document.addEventListener('keydown', function(event) {
-    if (event.altKey) {
-        switch (event.key) {
-            case '1':
-                toggleHighContrast();
-                break;
-            case '2':
-                toggleDarkMode();
-                break;
-            case '3':
-                increaseFont();
-                break;
-            case '4':
-                decreaseFont();
-                break;
-            case '5':
-                resetSettings();
-                break;
-            case 'e':
-                toggleNegativeContrast();
-                break;
-            case 'r':
-                toggleColorBlindMode();
-                break;
-            case 'g':
-                toggleGrayScale();
-                break;
-            case 'u':
-                toggleUnderlineLinks();
-                break;
-        }
-    }
-});
-
-    // Criação do botão e menu de acessibilidade
-    createAccessibilityButton();
-    createAccessibilityMenu();
-    loadSettings();
-});
-
-// Estilo CSS para o menu
-const style = document.createElement('style');
-style.innerHTML = `
-    .accessibility-menu {
-        position: fixed;
-        top: 10%;
-        right: 0;
-        width: 320px;
-        background-color: #f8f9fa;
-        border-radius: 15px 0 0 15px;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-        z-index: 1040;
-        overflow-y: auto;
-        max-height: 90vh;
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
-    }
-    .hidden {
-        transform: translateX(0);
-    }
-    .accessibility-toggle {
-        position: fixed;
-        top: 50%;
-        right: 0;
-        z-index: 1050;
-        border-radius: 50%;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        padding: 10px;
-    }
-     body.high-contrast {
-    /* This stylesheet based on 0WonB.css generated by Accessibility CSS Generator, (c) Silas S. Brown 2006-2015.  Version 0.9844 */
-  }
-  body.contrast .placebo {
-    line-height: normal;
-  }
-  body.contrast * {
-    -webkit-box-shadow: none !important;
-    box-shadow: none !important;
-  }
-  body.high-contrast a,
-  body.high-contrast abbr,
-  body.high-contrast acronym,
-  body.high-contrast address,
-  body.high-contrast article,
-  body.high-contrast aside,
-  body.high-contrast b,
-  body.high-contrast basefont,
-  body.high-contrast bdi,
-  body.high-contrast big,
-  body.high-contrast blink,
-  body.high-contrast blockquote,
-  body.high-contrast body,
-  body.high-contrast button,
-  body.high-contrast canvas,
-  body.high-contrast caption,
-  body.high-contrast center,
-  body.high-contrast cite,
-  body.high-contrast code,
-  body.high-contrast col,
-  body.high-contrast colgroup,
-  body.high-contrast command,
-  body.high-contrast dd,
-  body.high-contrast del,
-  body.high-contrast details,
-  body.high-contrast dfn,
-  body.high-contrast dir,
-  body.high-contrast div,
-  body.high-contrast dl,
-  body.high-contrast dt,
-  body.high-contrast em,
-  body.high-contrast embed,
-  body.high-contrast fieldset,
-  body.high-contrast figcaption,
-  body.high-contrast figure,
-  body.high-contrast font,
-  body.high-contrast footer,
-  body.high-contrast form,
-  body.high-contrast h1,
-  body.high-contrast h1 a,
-  body.high-contrast h1 a b,
-  body.high-contrast h1 abbr,
-  body.high-contrast h1 b,
-  body.high-contrast h1 center,
-  body.high-contrast h1 em,
-  body.high-contrast h1 i,
-  body.high-contrast h1 span,
-  body.high-contrast h1 strong,
-  body.high-contrast h2,
-  body.high-contrast h2 a,
-  body.high-contrast h2 a b,
-  body.high-contrast h2 abbr,
-  body.high-contrast h2 b,
-  body.high-contrast h2 center,
-  body.high-contrast h2 em,
-  body.high-contrast h2 i,
-  body.high-contrast h2 span,
-  body.high-contrast h2 strong,
-  body.high-contrast h3,
-  body.high-contrast h3 a,
-  body.high-contrast h3 a b,
-  body.high-contrast h3 abbr,
-  body.high-contrast h3 b,
-  body.high-contrast h3 center,
-  body.high-contrast h3 em,
-  body.high-contrast h3 i,
-  body.high-contrast h3 span,
-  body.high-contrast h3 strong,
-  body.high-contrast h4,
-  body.high-contrast h4 a,
-  body.high-contrast h4 a b,
-  body.high-contrast h4 abbr,
-  body.high-contrast h4 b,
-  body.high-contrast h4 center,
-  body.high-contrast h4 em,
-  body.high-contrast h4 i,
-  body.high-contrast h4 span,
-  body.high-contrast h4 strong,
-  body.high-contrast h5,
-  body.high-contrast h5 a,
-  body.high-contrast h5 a b,
-  body.high-contrast h5 abbr,
-  body.high-contrast h5 b,
-  body.high-contrast h5 center,
-  body.high-contrast h5 em,
-  body.high-contrast h5 i,
-  body.high-contrast h5 span,
-  body.high-contrast h5 strong,
-  body.high-contrast h6,
-  body.high-contrast h6 a,
-  body.high-contrast h6 a b,
-  body.high-contrast h6 abbr,
-  body.high-contrast h6 b,
-  body.high-contrast h6 center,
-  body.high-contrast h6 em,
-  body.high-contrast h6 i,
-  body.high-contrast h6 span,
-  body.high-contrast h6 strong,
-  body.high-contrast header,
-  body.high-contrast hgroup,
-  body.high-contrast html,
-  body.high-contrast i,
-  body.high-contrast iframe,
-  body.high-contrast img,
-  body.high-contrast input,
-  body.high-contrast ins,
-  body.high-contrast kbd,
-  body.high-contrast label,
-  body.high-contrast legend,
-  body.high-contrast li,
-  body.high-contrast listing,
-  body.high-contrast main,
-  body.high-contrast mark,
-  body.high-contrast marquee,
-  body.high-contrast menu,
-  body.high-contrast meter,
-  body.high-contrast multicol,
-  body.high-contrast nav,
-  body.high-contrast nobr,
-  body.high-contrast object,
-  body.high-contrast ol,
-  body.high-contrast option,
-  body.high-contrast output,
-  body.high-contrast p,
-  body.high-contrast plaintext,
-  body.high-contrast pre,
-  body.high-contrast progress,
-  body.high-contrast q,
-  body.high-contrast rb,
-  body.high-contrast rp,
-  body.high-contrast rt,
-  body.high-contrast ruby,
-  body.high-contrast s,
-  body.high-contrast samp,
-  body.high-contrast section,
-  body.high-contrast select,
-  body.high-contrast small,
-  body.high-contrast span,
-  body.high-contrast strike,
-  body.high-contrast strong,
-  body.high-contrast sub,
-  body.high-contrast summary,
-  body.high-contrast sup,
-  body.high-contrast svg,
-  body.high-contrast table,
-  body.high-contrast tbody,
-  body.high-contrast td,
-  body.high-contrast text,
-  body.high-contrast textarea,
-  body.high-contrast th,
-  body.high-contrast thead,
-  body.high-contrast time,
-  body.high-contrast tr,
-  body.high-contrast tt,
-  body.high-contrast u,
-  body.high-contrast ul,
-  body.high-contrast var,
-  body.high-contrast video,
-  body.high-contrast xmp {
-    -moz-appearance: none !important;
-    -moz-user-select: text !important;
-    -webkit-user-select: text !important;
-    background-image: none !important;
-    text-shadow: none !important;
-    user-select: text !important;
-  }
-  body.high-contrast a,
-  body.high-contrast abbr,
-  body.high-contrast acronym,
-  body.high-contrast address,
-  body.high-contrast article,
-  body.high-contrast aside,
-  body.high-contrast b,
-  body.high-contrast basefont,
-  body.high-contrast bdi,
-  body.high-contrast big,
-  body.high-contrast blink,
-  body.high-contrast blockquote,
-  body.high-contrast body,
-  body.high-contrast canvas,
-  body.high-contrast caption,
-  body.high-contrast center,
-  body.high-contrast cite,
-  body.high-contrast code,
-  body.high-contrast col,
-  body.high-contrast colgroup,
-  body.high-contrast command,
-  body.high-contrast dd,
-  body.high-contrast del,
-  body.high-contrast details,
-  body.high-contrast dfn,
-  body.high-contrast dir,
-  body.high-contrast div,
-  body.high-contrast dl,
-  body.high-contrast dt,
-  body.high-contrast em,
-  body.high-contrast embed,
-  body.high-contrast fieldset,
-  body.high-contrast figcaption,
-  body.high-contrast figure,
-  body.high-contrast font,
-  body.high-contrast footer,
-  body.high-contrast form,
-  body.high-contrast h1,
-  body.high-contrast h1 a,
-  body.high-contrast h1 a b,
-  body.high-contrast h1 abbr,
-  body.high-contrast h1 b,
-  body.high-contrast h1 center,
-  body.high-contrast h1 em,
-  body.high-contrast h1 i,
-  body.high-contrast h1 span,
-  body.high-contrast h1 strong,
-  body.high-contrast h2,
-  body.high-contrast h2 a,
-  body.high-contrast h2 a b,
-  body.high-contrast h2 abbr,
-  body.high-contrast h2 b,
-  body.high-contrast h2 center,
-  body.high-contrast h2 em,
-  body.high-contrast h2 i,
-  body.high-contrast h2 span,
-  body.high-contrast h2 strong,
-  body.high-contrast h3,
-  body.high-contrast h3 a,
-  body.high-contrast h3 a b,
-  body.high-contrast h3 abbr,
-  body.high-contrast h3 b,
-  body.high-contrast h3 center,
-  body.high-contrast h3 em,
-  body.high-contrast h3 i,
-  body.high-contrast h3 span,
-  body.high-contrast h3 strong,
-  body.high-contrast h4,
-  body.high-contrast h4 a,
-  body.high-contrast h4 a b,
-  body.high-contrast h4 abbr,
-  body.high-contrast h4 b,
-  body.high-contrast h4 center,
-  body.high-contrast h4 em,
-  body.high-contrast h4 i,
-  body.high-contrast h4 span,
-  body.high-contrast h4 strong,
-  body.high-contrast h5,
-  body.high-contrast h5 a,
-  body.high-contrast h5 a b,
-  body.high-contrast h5 abbr,
-  body.high-contrast h5 b,
-  body.high-contrast h5 center,
-  body.high-contrast h5 em,
-  body.high-contrast h5 i,
-  body.high-contrast h5 span,
-  body.high-contrast h5 strong,
-  body.high-contrast h6,
-  body.high-contrast h6 a,
-  body.high-contrast h6 a b,
-  body.high-contrast h6 abbr,
-  body.high-contrast h6 b,
-  body.high-contrast h6 center,
-  body.high-contrast h6 em,
-  body.high-contrast h6 i,
-  body.high-contrast h6 span,
-  body.high-contrast h6 strong,
-  body.high-contrast header,
-  body.high-contrast hgroup,
-  body.high-contrast html,
-  body.high-contrast i,
-  body.high-contrast iframe,
-  body.high-contrast input,
-  body.high-contrast ins,
-  body.high-contrast kbd,
-  body.high-contrast label,
-  body.high-contrast legend,
-  body.high-contrast li,
-  body.high-contrast listing,
-  body.high-contrast main,
-  body.high-contrast mark,
-  body.high-contrast marquee,
-  body.high-contrast menu,
-  body.high-contrast meter,
-  body.high-contrast multicol,
-  body.high-contrast nav:not(#toolbar),
-  body.high-contrast nobr,
-  body.high-contrast object,
-  body.high-contrast ol,
-  body.high-contrast option,
-  body.high-contrast output,
-  body.high-contrast p,
-  body.high-contrast plaintext,
-  body.high-contrast pre,
-  body.high-contrast progress,
-  body.high-contrast q,
-  body.high-contrast rb,
-  body.high-contrast rp,
-  body.high-contrast rt,
-  body.high-contrast ruby,
-  body.high-contrast s,
-  body.high-contrast samp,
-  body.high-contrast section,
-  body.high-contrast small,
-  body.high-contrast span,
-  body.high-contrast strike,
-  body.high-contrast sub,
-  body.high-contrast summary,
-  body.high-contrast sup,
-  body.high-contrast svg,
-  body.high-contrast table,
-  body.high-contrast tbody,
-  body.high-contrast td,
-  body.high-contrast text,
-  body.high-contrast textarea,
-  body.high-contrast th,
-  body.high-contrast thead,
-  body.high-contrast time,
-  body.high-contrast tr,
-  body.high-contrast tt,
-  body.high-contrast u,
-  body.high-contrast ul,
-  body.high-contrast var,
-  body.high-contrast video,
-  body.high-contrast xmp {
-    background: black !important;
-    background-color: black !important;
-  }
-  body.high-contrast a,
-  body.high-contrast article,
-  body.high-contrast aside,
-  body.high-contrast basefont,
-  body.high-contrast bdi,
-  body.high-contrast big,
-  body.high-contrast blink,
-  body.high-contrast blockquote,
-  body.high-contrast body,
-  body.high-contrast button,
-  body.high-contrast canvas,
-  body.high-contrast caption,
-  body.high-contrast center,
-  body.high-contrast code,
-  body.high-contrast col,
-  body.high-contrast colgroup,
-  body.high-contrast command,
-  body.high-contrast dd,
-  body.high-contrast del,
-  body.high-contrast details,
-  body.high-contrast dir,
-  body.high-contrast div,
-  body.high-contrast dl,
-  body.high-contrast dt,
-  body.high-contrast embed,
-  body.high-contrast fieldset,
-  body.high-contrast figcaption,
-  body.high-contrast figure,
-  body.high-contrast font,
-  body.high-contrast footer,
-  body.high-contrast form,
-  body.high-contrast header,
-  body.high-contrast hgroup,
-  body.high-contrast html,
-  body.high-contrast iframe,
-  body.high-contrast img,
-  body.high-contrast input,
-  body.high-contrast ins,
-  body.high-contrast kbd,
-  body.high-contrast label,
-  body.high-contrast legend,
-  body.high-contrast li,
-  body.high-contrast listing,
-  body.high-contrast main,
-  body.high-contrast mark,
-  body.high-contrast marquee,
-  body.high-contrast menu,
-  body.high-contrast meter,
-  body.high-contrast multicol,
-  body.high-contrast nav,
-  body.high-contrast nobr,
-  body.high-contrast object,
-  body.high-contrast ol,
-  body.high-contrast option,
-  body.high-contrast output,
-  body.high-contrast p,
-  body.high-contrast plaintext,
-  body.high-contrast pre,
-  body.high-contrast progress,
-  body.high-contrast q,
-  body.high-contrast rb,
-  body.high-contrast rp,
-  body.high-contrast rt,
-  body.high-contrast ruby,
-  body.high-contrast s,
-  body.high-contrast samp,
-  body.high-contrast section,
-  body.high-contrast small,
-  body.high-contrast span,
-  body.high-contrast strike,
-  body.high-contrast sub,
-  body.high-contrast summary,
-  body.high-contrast sup,
-  body.high-contrast svg,
-  body.high-contrast table,
-  body.high-contrast tbody,
-  body.high-contrast td,
-  body.high-contrast text,
-  body.high-contrast textarea,
-  body.high-contrast th,
-  body.high-contrast thead,
-  body.high-contrast time,
-  body.high-contrast tr,
-  body.high-contrast tt,
-  body.high-contrast u,
-  body.high-contrast ul,
-  body.high-contrast var,
-  body.high-contrast video,
-  body.high-contrast xmp {
-    color: white !important;
-  }
-  body.high-contrast abbr,
-  body.high-contrast acronym,
-  body.high-contrast b,
-  body.high-contrast b span,
-  body.high-contrast h1 b,
-  body.high-contrast h1 strong,
-  body.high-contrast h2 b,
-  body.high-contrast h2 strong,
-  body.high-contrast h3 b,
-  body.high-contrast h3 strong,
-  body.high-contrast h4 b,
-  body.high-contrast h4 strong,
-  body.high-contrast h5 b,
-  body.high-contrast h5 strong,
-  body.high-contrast h6 b,
-  body.high-contrast h6 strong,
-  body.high-contrast strong,
-  body.high-contrast strong span {
-    color: yellow !important;
-  }
-  body.high-contrast address,
-  body.high-contrast address span,
-  body.high-contrast cite,
-  body.high-contrast cite span,
-  body.high-contrast dfn,
-  body.high-contrast dfn span,
-  body.high-contrast em,
-  body.high-contrast em span,
-  body.high-contrast h1 em,
-  body.high-contrast h1 i,
-  body.high-contrast h2 em,
-  body.high-contrast h2 i,
-  body.high-contrast h3 em,
-  body.high-contrast h3 i,
-  body.high-contrast h4 em,
-  body.high-contrast h4 i,
-  body.high-contrast h5 em,
-  body.high-contrast h5 i,
-  body.high-contrast h6 em,
-  body.high-contrast h6 i,
-  body.high-contrast i,
-  body.high-contrast i span,
-  body.high-contrast u,
-  body.high-contrast u span {
-    color: #FFFF80 !important;
-  }
-  body.high-contrast dt {
-    border-top: thin solid grey !important;
-  }
-  body.high-contrast h1,
-  body.high-contrast h1 a,
-  body.high-contrast h1 a b,
-  body.high-contrast h1 abbr,
-  body.high-contrast h1 center,
-  body.high-contrast h1 span,
-  body.high-contrast h2,
-  body.high-contrast h2 a,
-  body.high-contrast h2 a b,
-  body.high-contrast h2 abbr,
-  body.high-contrast h2 center,
-  body.high-contrast h2 span,
-  body.high-contrast h3,
-  body.high-contrast h3 a,
-  body.high-contrast h3 a b,
-  body.high-contrast h3 abbr,
-  body.high-contrast h3 center,
-  body.high-contrast h3 span,
-  body.high-contrast h4,
-  body.high-contrast h4 a,
-  body.high-contrast h4 a b,
-  body.high-contrast h4 abbr,
-  body.high-contrast h4 center,
-  body.high-contrast h4 span,
-  body.high-contrast h5,
-  body.high-contrast h5 a,
-  body.high-contrast h5 a b,
-  body.high-contrast h5 abbr,
-  body.high-contrast h5 center,
-  body.high-contrast h5 span,
-  body.high-contrast h6,
-  body.high-contrast h6 a,
-  body.high-contrast h6 a b,
-  body.high-contrast h6 abbr,
-  body.high-contrast h6 center,
-  body.high-contrast h6 span {
-    color: #40C090 !important;
-  }
-  body.high-contrast img {
-    background: #808080 !important;
-    background-color: #808080 !important;
-  }
-  body.high-contrast abbr,
-  body.high-contrast acronym {
-    border-bottom: 1px dotted !important;
-  }
-  body.high-contrast :focus {
-    outline: thin dotted !important;
-  }
-  body.high-contrast a.button,
-  body.high-contrast a.button abbr,
-  body.high-contrast a.button acronym,
-  body.high-contrast a.button b,
-  body.high-contrast a.button basefont,
-  body.high-contrast a.button big,
-  body.high-contrast a.button br,
-  body.high-contrast a.button code,
-  body.high-contrast a.button div,
-  body.high-contrast a.button em,
-  body.high-contrast a.button font,
-  body.high-contrast a.button h1,
-  body.high-contrast a.button h2,
-  body.high-contrast a.button h3,
-  body.high-contrast a.button h4,
-  body.high-contrast a.button h5,
-  body.high-contrast a.button h6,
-  body.high-contrast a.button i,
-  body.high-contrast a.button kbd,
-  body.high-contrast a.button rb,
-  body.high-contrast a.button rp,
-  body.high-contrast a.button rt,
-  body.high-contrast a.button ruby,
-  body.high-contrast a.button samp,
-  body.high-contrast a.button small,
-  body.high-contrast a.button span,
-  body.high-contrast a.button strong,
-  body.high-contrast a.button tt,
-  body.high-contrast a.button u,
-  body.high-contrast a.button var,
-  body.high-contrast a:link,
-  body.high-contrast a:link abbr,
-  body.high-contrast a:link acronym,
-  body.high-contrast a:link b,
-  body.high-contrast a:link basefont,
-  body.high-contrast a:link big,
-  body.high-contrast a:link br,
-  body.high-contrast a:link code,
-  body.high-contrast a:link div,
-  body.high-contrast a:link em,
-  body.high-contrast a:link font,
-  body.high-contrast a:link h1,
-  body.high-contrast a:link h2,
-  body.high-contrast a:link h3,
-  body.high-contrast a:link h4,
-  body.high-contrast a:link h5,
-  body.high-contrast a:link h6,
-  body.high-contrast a:link i,
-  body.high-contrast a:link kbd,
-  body.high-contrast a:link rb,
-  body.high-contrast a:link rp,
-  body.high-contrast a:link rt,
-  body.high-contrast a:link ruby,
-  body.high-contrast a:link samp,
-  body.high-contrast a:link small,
-  body.high-contrast a:link span,
-  body.high-contrast a:link strong,
-  body.high-contrast a:link tt,
-  body.high-contrast a:link u,
-  body.high-contrast a:link var,
-  body.high-contrast div#secondaryNav div#documentNavigation ul.navigationTabs li.tabItem {
-    color: #0080FF !important;
-  }
-  body.high-contrast button,
-  body.high-contrast input,
-  body.high-contrast textarea,
-  body.high-contrast select,
-  body.high-contrast table,
-  body.high-contrast td,
-  body.high-contrast th,
-  body.high-contrast tr,
-  body.high-contrast tt {
-    border: 1px solid #ffffff !important;
-  }
-  body.high-contrast button {
-    background: #600040 !important;
-    background-color: #600040 !important;
-  }
-  body.high-contrast select {
-    -webkit-appearance: listbox !important;
-    background: #600060 !important;
-    background-color: #600060 !important;
-  }
-  body.high-contrast a:visited,
-  body.high-contrast a:visited abbr,
-  body.high-contrast a:visited acronym,
-  body.high-contrast a:visited b,
-  body.high-contrast a:visited basefont,
-  body.high-contrast a:visited big,
-  body.high-contrast a:visited br,
-  body.high-contrast a:visited code,
-  body.high-contrast a:visited div,
-  body.high-contrast a:visited em,
-  body.high-contrast a:visited font,
-  body.high-contrast a:visited h1,
-  body.high-contrast a:visited h2,
-  body.high-contrast a:visited h3,
-  body.high-contrast a:visited h4,
-  body.high-contrast a:visited h5,
-  body.high-contrast a:visited h6,
-  body.high-contrast a:visited i,
-  body.high-contrast a:visited kbd,
-  body.high-contrast a:visited rb,
-  body.high-contrast a:visited rp,
-  body.high-contrast a:visited rt,
-  body.high-contrast a:visited ruby,
-  body.high-contrast a:visited samp,
-  body.high-contrast a:visited small,
-  body.high-contrast a:visited span,
-  body.phigh-contrast a:visited strong,
-  body.high-contrast a:visited tt,
-  body.high-contrast a:visited u,
-  body.high-contrast a:visited var,
-  body.-contrast div#secondaryNav div#documentNavigation ul.navigationTabs li.tabItem.active {
-    color: #00FFFF !important;
-  }
-  body.high-contrast ::selection,
-  body.high-contrast ::-moz-selection {
-    background: #4080c0 !important;
-    background-color: #4080c0 !important;
-  }
-  body.high-contrast a.button:hover,
-  body.high-contrast a.button:hover abbr,
-  body.high-contrast a.button:hover acronym,
-  body.high-contrast a.button:hover b,
-  body.high-contrast a.button:hover basefont,
-  body.high-contrast a.button:hover big,
-  body.high-contrast a.button:hover br,
-  body.high-contrast a.button:hover code,
-  body.high-contrast a.button:hover div,
-  body.high-contrast a.button:hover em,
-  body.high-contrast a.button:hover font,
-  body.high-contrast a.button:hover h1,
-  body.high-contrast a.button:hover h2,
-  body.high-contrast a.button:hover h3,
-  body.high-contrast a.button:hover h4,
-  body.high-contrast a.button:hover h5,
-  body.high-contrast a.button:hover h6,
-  body.high-contrast a.button:hover i,
-  body.high-contrast a.button:hover kbd,
-  body.high-contrast a.button:hover rb,
-  body.high-contrast a.button:hover rp,
-  body.high-contrast a.button:hover rt,
-  body.high-contrast a.button:hover ruby,
-  body.high-contrast a.button:hover samp,
-  body.high-contrast a.button:hover small,
-  body.high-contrast a.button:hover span,
-  body.high-contrast a.button:hover strong,
-  body.high-contrast a.button:hover tt,
-  body.high-contrast a.button:hover u,
-  body.high-contrast a.button:hover var,
-  body.high-contrast a:link:hover,
-  body.high-contrast a:link:hover abbr,
-  body.high-contrast a:link:hover acronym,
-  body.high-contrast a:link:hover b,
-  body.high-contrast a:link:hover basefont,
-  body.high-contrast a:link:hover big,
-  body.high-contrast a:link:hover br,
-  body.high-contrast a:link:hover code,
-  body.high-contrast a:link:hover div,
-  body.high-contrast a:link:hover em,
-  body.high-contrast a:link:hover font,
-  body.high-contrast a:link:hover h1,
-  body.high-contrast a:link:hover h2,
-  body.high-contrast a:link:hover h3,
-  body.high-contrast a:link:hover h4,
-  body.high-contrast a:link:hover h5,
-  body.high-contrast a:link:hover h6,
-  body.high-contrast a:link:hover i,
-  body.high-contrast a:link:hover kbd,
-  body.high-contrast a:link:hover rb,
-  body.high-contrast a:link:hover rp,
-  body.high-contrast a:link:hover rt,
-  body.high-contrast a:link:hover ruby,
-  body.high-contrast a:link:hover samp,
-  body.high-contrast a:link:hover small,
-  body.high-contrast a:link:hover span,
-  body.high-contrast a:link:hover strong,
-  body.high-contrast a:link:hover tt,
-  body.high-contrast a:link:hover u,
-  body.high-contrast a:link:hover var,
-  body.high-contrast a:visited:hover,
-  body.high-contrast a:visited:hover abbr,
-  body.high-contrast a:visited:hover acronym,
-  body.high-contrast a:visited:hover b,
-  body.high-contrast a:visited:hover basefont,
-  body.high-contrast a:visited:hover big,
-  body.high-contrast a:visited:hover br,
-  body.high-contrast a:visited:hover code,
-  body.high-contrast a:visited:hover div,
-  body.high-contrast a:visited:hover em,
-  body.high-contrast a:visited:hover font,
-  body.high-contrast a:visited:hover h1,
-  body.high-contrast a:visited:hover h2,
-  body.high-contrast a:visited:hover h3,
-  body.high-contrast a:visited:hover h4,
-  body.high-contrast a:visited:hover h5,
-  body.high-contrast a:visited:hover h6,
-  body.high-contrast a:visited:hover i,
-  body.high-contrast a:visited:hover kbd,
-  body.high-contrast a:visited:hover rb,
-  body.high-contrast a:visited:hover rp,
-  body.high-contrast a:visited:hover rt,
-  body.high-contrast a:visited:hover ruby,
-  body.high-contrast a:visited:hover samp,
-  body.high-contrast a:visited:hover small,
-  body.high-contrast a:visited:hover span,
-  body.high-contrast a:visited:hover strong,
-  body.high-contrast a:visited:hover tt,
-  body.high-contrast a:visited:hover u,
-  body.high-contrast a:visited:hover var {
-    background: #400000 !important;
-    background-color: #400000 !important;
-  }
-  body.high-contrast body > input#site + div#wrapper span.mk,
-  body.high-contrast body > input#site + div#wrapper span.mk b,
-  body.high-contrast input[type=reset] {
-    background: #400060 !important;
-    background-color: #400060 !important;
-  }
-  body.high-contrast div[role="button"],
-  body.high-contrast input[type=button],
-  body.high-contrast input[type=submit] {
-    background: #600040 !important;
-    background-color: #600040 !important;
-  }
-  body.high-contrast input[type=search] {
-    -webkit-appearance: textfield !important;
-  }
-  body.high-contrast html button[disabled],
-  body.high-contrast html input[disabled],
-  body.high-contrast html select[disabled],
-  body.high-contrast html textarea[disabled] {
-    background: #404040 !important;
-    background-color: #404040 !important;
-  }
-  body.high-contrast .menu li a span.label {
-    text-transform: none !important;
-  }
-  body.high-contrast .menu li a span.label,
-  body.high-contrast div.jwplayer span.jwcontrolbar,
-  body.high-contrast div.jwplayer span.jwcontrols {
-    display: inline !important;
-  }
-  body.high-contrast a:link.new,
-  body.high-contrast a:link.new i,
-  body.high-contrast a:link.new b,
-  body.high-contrast span.Apple-style-span {
-    color: #FFFF40 !important;
-  }
-  body.high-contrast body.mediawiki img.tex {
-    background: white !important;
-    background-color: white !important;
-    border: white solid 3px !important;
-  }
-  body.high-contrast text > tspan:first-letter,
-  body.high-contrast text > tspan:first-line {
-    background: inherit !important;
-    background-color: inherit !important;
-    color: inherit !important;
-  }
-  body.high-contrast div.sbtc div.sbsb_a li.sbsb_d div,
-  body.high-contrast table.gssb_c tr.gssb_i a,
-  body.high-contrast table.gssb_c tr.gssb_i b,
-  body.high-contrast table.gssb_c tr.gssb_i span,
-  body.high-contrast table.gssb_c tr.gssb_i td {
-    background: #003050 !important;
-    background-color: #003050 !important;
-  }
-  body.high-contrast img[width="18"][height="18"] {
-    height: 18px !important;
-    width: 18px !important;
-  }
-  body.high-contrast a > span.iconHelp:empty:after {
-    content: "Help" !important;
-  }
-  body.high-contrast div#gmap,
-  body.high-contrast div#gmap * {
-    background: initial !important;
-  }
-   body.dark-mode {
-    background: #121212 !important;
-    color: #655b5b !important;
-  }
-  
-  body.dark-mode img {
-    filter: grayscale(75%) contrast(90%);
-  }
-  
-  body.dark-mode img:hover {
-    filter: grayscale(0) contrast(100%);
-  } 
-    body.negative-contrast {
-    filter: invert(100%);
-}
-    .grayscale {
-        filter: grayscale(100%);
-    }
-    .negative-contrast {
-        filter: invert(100%);
-    }
-    .protanopia {
-        filter: url(#protanopia);
-    }
-    .deuteranopia {
-        filter: url(#deuteranopia);
-    }
-    .tritanopia {
-        filter: url(#tritanopia);
-    }
-    .dyslexia-mode a, .dyslexia-mode h1, .dyslexia-mode h2, .dyslexia-mode h3, .dyslexia-mode h4, .dyslexia-mode h5, .dyslexia-mode h6 {
-        text-decoration: underline;
-        font-family: 'OpenDyslexic', sans-serif;
-    }
-    .tda-mode {
-        animation: none !important;
-        transition: none !important;
-    }
-    .accessibility-menu {
-        background-color: #f8f9fa;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        padding: 20px;
-        max-width: 600px;
-        margin: auto;
-    }
-        .accessibility-menu h3 {
-        font-size: 1.5rem;
-        color: #007bff;
-    }
-    .accessibility-menu .card {
-        border: none;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-    .accessibility-menu .card-body {
-        padding: 15px;
-    }
-    .accessibility-menu .btn {
-        border-radius: 20px;
-        transition: background-color 0.3s, color 0.3s;
-    }
-    .accessibility-menu .btn:hover {
-        background-color: #007bff;
-        color: #fff;
-    }
-    .accessibility-menu .btn-outline-secondary:hover {
-        background-color: #6c757d;
-        color: #fff;
-    }
-    .accessibility-menu .btn-outline-info:hover {
-        background-color: #17a2b8;
-        color: #fff;
-    }
-    .accessibility-menu .btn-outline-warning:hover {
-        background-color: #ffc107;
-        color: #fff;
-    }
-    .accessibility-menu .btn-outline-success:hover {
-        background-color: #28a745;
-        color: #fff;
-    }
-    .accessibility-menu .btn-outline-danger:hover {
-        background-color: #dc3545;
-        color: #fff;
-    }
-    .accessibility-menu .btn-outline-primary:hover {
-        background-color: #007bff;
-        color: #fff;
-    }
-    .accessibility-menu .btn-outline-secondary:hover {
-        background-color: #6c757d;
-        color: #fff;
-    }
-    .accessibility-menu .icon-button {
-        cursor: pointer;
-        transition: transform 0.3s, color 0.3s;
-    }
-    .accessibility-menu .icon-button:hover {
-        transform: scale(1.1);
-        color: #007bff;
-    }
-    .accessibility-menu .icon-label {
-        font-size: 0.85rem;
-    }
-    .accessibility-menu .icon-button.selected i {
-        color: #007bff;
-    }
-    .accessibility-menu .icon-button.selected {
-        transform: scale(1.1);
-    }
-        #readingRuler {
-            background-color: rgba(255, 255, 0, 0.8);
-            position: fixed;
-            width: 100%;
-            height: 5px;
-            z-index: 1000;
-        }
-
-        #readingMask {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            pointer-events: none;
-        }
-
-        #readingHole {
-            width: 100%;
-            height: 50px;
-            background-color: transparent;
-        }
-
-        #magnifier {
-            position: fixed;
-            border-radius: 50%;
-            border: 3px solid #007bff;
-            overflow: hidden;
-            z-index: 10000;
-            pointer-events: none;
-        }
-          .fixed-accessibility-button {
-        font-size: initial !important;
-    }
-    .accessibility-icon {
-        font-size: 3em !important;
-        color: white !important;
-        pointer-events: none;
-    }  
-`;
-document.head.appendChild(style);
-
-loadSettings();
