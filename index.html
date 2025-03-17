@@ -25,6 +25,12 @@
     <link href="assets/css/style.css" rel="stylesheet">    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    
     <script src="assets/css/js/plugin.js" defer></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <!-- Incluindo SweetAlert2 para as notificações -->
@@ -97,6 +103,107 @@
 <style>
 .accessibility-btn:focus {
     outline: 2px solid #000;
+}
+.section-title h2, .section-headline h2 {
+    font-size: 2.5em;
+    font-weight: bold;
+}
+.floating-buttons a {
+    font-size: 2.5em; /* Increase the size of the icons */
+}
+#modalSimulacao {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+#modalSimulacao h2 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+#modalSimulacao form {
+    display: flex;
+    flex-direction: column;
+}
+#modalSimulacao form label {
+    margin-bottom: 5px;
+}
+#modalSimulacao form input,
+#modalSimulacao form select,
+#modalSimulacao form button {
+    margin-bottom: 15px;
+    padding: 10px;
+    font-size: 1em;
+}
+#modalSimulacao form button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+#modalSimulacao form button:hover {
+    background-color: #0056b3;
+}
+#modalSimulacao #resultado {
+    margin-top: 20px;
+}
+#modalSimulacao .close-btn {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    font-size: 1em;
+}
+#modalSimulacao .close-btn:hover {
+    background-color: #c82333;
+}
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+.icon-help {
+    font-size: 80px; /* Increase the size of the icons */
+}
+.form-group.col-md-4 {
+    display: inline-block;
+    width: 48%;
+}
+.form-group.col-md-2 {
+    display: inline-block;
+    width: 23%;
+}
+.carousel-item {
+    height: 100vh;
+    min-height: 300px;
+    background: no-repeat center center scroll;
+    background-size: cover;
+}
+.carousel-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+.carousel-container .container {
+    text-align: center;
+    color: #fff;
+}
+.carousel-container .container p {
+    font-size: 2em;
+    font-weight: bold;
 }
 </style>
 </head>
@@ -174,42 +281,62 @@
       </div>
     </div>
   </div>
+<!-- VLibras - Intérprete de Libras -->
+<div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+        <div class="vw-plugin-top-wrapper"></div>
+    </div>
+</div>
 
+<!-- Script VLibras -->
+<script>
+    (function loadVLibras() {
+        const script = document.createElement('script');
+        script.src = 'https://vlibras.gov.br/app/vlibras-plugin.js';
+        script.defer = true;
+        script.onload = function () {
+            console.log("VLibras carregado com sucesso!");
+            new VLibras.Widget();
+        };
+        document.body.appendChild(script);
+    })();
+</script>
 <!-- Seção de Slides -->
 <section id="hero">
     <div class="hero-container">
         <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000" role="region" aria-label="Slider de Herói">
-            <ol id="hero-carousel-indicators" class="carousel-indicators"></ol>
+            <ol id="hero-carousel-indicators" class="carousel-indicators">
+                <?php
+                $active = true;
+                $index = 0;
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $activeClass = $active ? 'class="active"' : '';
+                    echo "<li data-bs-target='#heroCarousel' data-bs-slide-to='$index' $activeClass></li>";
+                    $active = false;
+                    $index++;
+                }
+                ?>
+            </ol>
             <div class="carousel-inner" role="listbox">
-                <div class="carousel-item active" style="background-image: url(assets/img/slider/slider1.jpg)">
-                    <div class="carousel-container">
-                        <div class="container">
-                            <p class="animate__animated animate__fadeInDown">Experiência no Mercado</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="carousel-item" style="background-image: url(assets/img/slider/slider2.jpg)">
-                    <div class="carousel-container">
-                        <div class="container">
-                            <p class="animate__animated animate__fadeInUp">Transparência e Credibilidade</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="carousel-item" style="background-image: url(assets/img/slider/slider3.jpg)">
-                    <div class="carousel-container">
-                        <div class="container">
-                            <p class="animate__animated animate__fadeInUp">Foco no Resultado</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="carousel-item" style="background-image: url(assets/img/slider/slider4.jpg)">
-                    <div class="carousel-container">
-                        <div class="container">
-                            <p class="animate__animated animate__fadeInUp">Alcançar Objetivos</p>
-                        </div>
-                    </div>
-                </div>
-            </div>                
+                <?php
+                mysqli_data_seek($result, 0); // Reset result pointer
+                $active = true;
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $image = $row['nome_arquivo'];
+                    $caption = $row['legenda'];
+                    $activeClass = $active ? 'active' : '';
+                    echo "<div class='carousel-item $activeClass' style='background-image: url(assets/img/slider/$image)'>
+                            <div class='carousel-container'>
+                                <div class='container'>
+                                    <p class='animate__animated animate__fadeInDown'>$caption</p>
+                                </div>
+                            </div>
+                          </div>";
+                    $active = false;
+                }
+                ?>
+            </div>
             <a class="carousel-control-prev" href="#heroCarousel" role="button" data-bs-slide="prev" aria-label="Slide anterior">
                 <span class="carousel-control-prev-icon bi bi-chevron-left" aria-hidden="true"></span>
             </a>
@@ -300,7 +427,7 @@
                 <div class="col-md-3 col-sm-6">
                     <div class="single-services">
                         <div class="service-box">
-                            <i class="bi bi-briefcase icon-help" style="font-size: 60px;" aria-hidden="true"></i>
+                            <i class="bi bi-briefcase icon-help" aria-hidden="true"></i>
                             <h4><a href="#">Consultoria</a></h4>
                             <p>Nossos especialistas ajudarão desde a abertura de contas até delinear a melhor estratégia para os diferentes mercados financeiros.</p>
                         </div>
@@ -309,7 +436,7 @@
                 <div class="col-md-3 col-sm-6">
                     <div class="single-services">
                         <div class="service-box">
-                            <i class="bi bi-person-vcard-fill icon-help" style="font-size: 60px;" aria-hidden="true"></i>
+                            <i class="bi bi-person-vcard-fill icon-help" aria-hidden="true"></i>
                             <h4><a href="#">Intermediação de Negócios</a></h4>
                             <p>Atuando como correspondentes bancários com mais de 15 anos de experiência. Parceria com os principais bancos e financeiras de crédito consignado no país.</p>
                         </div>
@@ -318,7 +445,7 @@
                 <div class="col-md-3 col-sm-6">
                     <div class="single-services">
                         <div class="service-box">
-                            <i class="bi bi-credit-card icon-help" style="font-size: 60px;" aria-hidden="true"></i>
+                            <i class="bi bi-credit-card icon-help" aria-hidden="true"></i>
                             <h4><a href="#">Cartões de Crédito Consignado</a></h4>
                             <p>Conveniado com os principais bancos, ao todo são mais de 250 convênios ativos em Governos, Prefeituras e para aposentados e pensionistas do INSS.</p>
                         </div>
@@ -327,7 +454,7 @@
                 <div class="col-md-3 col-sm-6">
                     <div class="single-services">
                         <div class="service-box">
-                            <i class="bi bi-cash-coin icon-help" style="font-size: 60px;" aria-hidden="true"></i>
+                            <i class="bi bi-cash-coin icon-help" aria-hidden="true"></i>
                             <h4><a href="#">Saque Aniversário FGTS</a></h4>
                             <p>No saque-aniversário você pode sacar o valor que possui em FGTS com taxas a partir de 1.29% a.m..</p>
                         </div>
@@ -353,20 +480,22 @@
                     <div class="form-row">
                         <div class="form-group col-md-4">
                             <label for="data_nascimento">Data de Nascimento:</label>
-                            <input type="date" class="form-control" id="data_nascimento" name="data_nascimento" required>
+                            <input type="text" class="form-control" id="data_nascimento" name="data_nascimento" placeholder="Insira sua data de nascimento" required>
                         </div>
                         <div class="form-group col-md-4">
                             <label for="telefone">Telefone:</label>
                             <input type="tel" class="form-control" id="telefone" name="telefone" placeholder="(00) 00000-0000" required maxlength="15">
                         </div>
+                    </div>
+                    <div class="form-row">
                         <div class="form-group col-md-4">
                             <label for="email">E-mail:</label>
                             <input type="email" class="form-control" id="email" name="email" placeholder="seu@email.com" required>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="horario_contato">Horário para Contato:</label>
-                        <input type="time" class="form-control" id="horario_contato" name="horario_contato" required>
+                        <div class="form-group col-md-2">
+                            <label for="horario_contato">Horário para Contato:</label>
+                            <input type="time" class="form-control" id="horario_contato" name="horario_contato" required>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="tipo">Tipo:</label>
@@ -411,11 +540,14 @@
                 </form>
                 <script>
                     $(document).ready(function () {
+                        // Aplicar máscara para data de nascimento
+                        $('#data_nascimento').mask('00/00/0000');
+
                         $('#form-requisicao').submit(function (event) {
                             event.preventDefault(); // Impede o envio padrão do formulário
                             let isValid = true;
                             let missingFields = [];
-                
+
                             if ($('#nome').val().trim() === '') {
                                 missingFields.push('Nome');
                                 isValid = false;
@@ -428,7 +560,7 @@
                                 missingFields.push('E-mail');
                                 isValid = false;
                             }
-                
+
                             if (!isValid) {
                                 Swal.fire({
                                     icon: 'error',
@@ -438,6 +570,11 @@
                                     showConfirmButton: false
                                 });
                             } else {
+                                // Formatar a data de nascimento antes de enviar o formulário
+                                let dataNascimento = $('#data_nascimento').val();
+                                let dataFormatada = dataNascimento.replace(/(\d{2})[-\/](\d{2})[-\/](\d{4})/, '$3-$2-$1');
+                                $('#data_nascimento').val(dataFormatada);
+
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Requisição Enviada',
@@ -456,6 +593,90 @@
         </div>
     </section>
     <!-- Fim da Seção Requisição de Análise de Crédito -->
+   
+   <!-- Inicio da Seção Simulação -->
+    <section id="analise-credito" class="section-bg">
+        <div class="container" data-aos="fade-up">
+            <div class="section-title text-center">
+                <h2>Análise de Crédito</h2>
+                <p>Simule seu empréstimo consignado e veja as melhores opções para você.</p>
+                <button class="btn btn-primary" onclick="abrirModal()">Simular Empréstimo</button>
+            </div>
+        </div>
+    </section>
+    
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div id="modalSimulacao">
+        <h2>Simulador de Empréstimo</h2>
+        <form id="formSimulacao">
+            <label for="valor">Valor desejado:</label>
+            <input type="number" id="valor" required>
+            <label for="parcelas">Parcelas:</label>
+            <select id="parcelas">
+                <option value="12">12x</option>
+                <option value="24">24x</option>
+                <option value="36">36x</option>
+            </select>
+            <label for="cpf">CPF:</label>
+            <input type="text" id="cpf" required>
+            <button type="button" onclick="simularEmprestimo()">Simular</button>
+        </form>
+        <div id="resultado"></div>
+        <button class="close-btn" onclick="fecharModal()">Fechar</button>
+    </div>
+
+    <script>
+        function abrirModal() {
+            document.getElementById("modalSimulacao").style.display = "block";
+            document.getElementById("modalOverlay").style.display = "block";
+        }
+
+        function fecharModal() {
+            document.getElementById("modalSimulacao").style.display = "none";
+            document.getElementById("modalOverlay").style.display = "none";
+        }
+
+        function simularEmprestimo() {
+            let valor = document.getElementById("valor").value;
+            let parcelas = document.getElementById("parcelas").value;
+            let cpf = document.getElementById("cpf").value;
+
+            if (!valor || !parcelas || !cpf) {
+                alert('Por favor, preencha todos os campos.');
+                return;
+            }
+
+            let chaveAES = "chaveSegura1234567890123456";
+            let cpfCriptografado = CryptoJS.AES.encrypt(cpf, chaveAES).toString();
+
+            fetch('api/simulacao.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ valor, parcelas, cpf: cpfCriptografado })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("resultado").innerHTML = `<p>Parcela mensal: R$ ${data.parcela}</p>`;
+            })
+            .catch(error => console.error('Erro:', error));
+        }
+    </script>
+    <?php
+// API Simulação
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = json_decode(file_get_contents("php://input"), true);
+    $valor = $input['valor'];
+    $parcelas = $input['parcelas'];
+    $cpfCriptografado = $input['cpf'];
+
+    $chaveAES = "chaveSegura1234567890123456";
+    $cpf = openssl_decrypt(base64_decode($cpfCriptografado), 'aes-256-cbc', $chaveAES, 0, substr($chaveAES, 0, 16));
+
+    $api_url = "https://api.serasaexperian.com/simulacao";
+    $response = file_get_contents($api_url . "?valor=$valor&parcelas=$parcelas&cpf=$cpf");
+    echo $response;
+}
+?>
 
     <!-- Seção Dúvidas Frequentes -->
     <section id="faq" class="faq section-bg">
@@ -728,7 +949,7 @@
     <div class="container d-md-flex py-4">
         <div class="me-md-auto text-center text-md-start">
             <div class="copyright darkmode-white-text">
-                &copy; Copyright <strong><span>Confinter 2024</span></strong>. Todos os Direitos Reservados.
+                &copy; Copyright <strong><span>CONFINTER <?php echo date("Y"); ?></span></strong>. Todos os Direitos Reservados.
             </div>
             <div class="credits">
                 Desenvolvido por <a href="https://github.com/finandolopes/DRP01-Projeto-Integrador-em-Computa-o-II-Turma-006">DRP01 Projeto Integrador em Computação II Turma 006</a> 
@@ -768,5 +989,7 @@
 <!-- Importar o arquivo de validações JS -->
 <script src="form-validation.js"></script>
 </body>
-</html> 
+</html>
+
+
 
