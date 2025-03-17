@@ -3,7 +3,7 @@
 
 
 ## 📋 Índice
-- [Link do projeto:Homologação](http://confinter.rf.gd/)
+- [Link do projeto:Homologação]([http://confinter.rf.gd/](https://drp-01-projeto-integrador-em-computa-o-ii-turma-006.vercel.app/))
 - [Link do projeto:Produção](http://confinter.com.br)
 
 - [📖 Sobre](#-Sobre)
