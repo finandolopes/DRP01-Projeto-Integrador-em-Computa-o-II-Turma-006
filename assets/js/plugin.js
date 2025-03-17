@@ -62,7 +62,9 @@ document.addEventListener('DOMContentLoaded', function () {
         button.onclick = toggleMenu;
         // Estilo do botão para visibilidade e fácil toque
         button.style.position = 'fixed';
-        button.style.top = '50%';
+        button.style.top = '20%'; // Move para cima (ajuste conforme necessário)
+        button.style.transform = 'translateY(0)'; // Remove centralização vertical
+
         button.style.right = '10px';
         button.style.transform = 'translateY(-50%)';
         button.style.zIndex = '10000';
@@ -186,15 +188,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     <option value="Georgia">Georgia</option>
                     <option value="Times New Roman">Times New Roman</option>
                 </select>-->
-                    <!-- Modos Especiais -->
-                    <div class="col-12">
-                        <button class="btn btn-outline-warning w-100 mb-1 btn-sm" onclick="toggleDyslexiaMode()">Dislexia</button>
-                        <button class="btn btn-outline-success w-100 mb-1 btn-sm" onclick="toggleTDAMode()">TDAH</button>
-                        <button class="btn btn-outline-danger w-100 mb-1 btn-sm" onclick="toggleAntiEpilepsyMode()">Anti-Epilepsia</button>
-                    </div>
-                    <!-- Habilidades Motoras -->
-                    <div class="col-12"> 
-                        <button class="btn btn-outline-primary w-100 mb-1 btn-sm" onclick="toggleMotorSkillsMode()">Habilidades Motoras</button>
+                    <!-- Modos Especiais -->                    
+                    <div class="col-12">                        
                         <button class="btn btn-outline-secondary w-100 mb-1 btn-sm" onclick="toggleDaltonismMode()">Daltonismo <span id="daltonismModeLabel">(Nenhum)</span></button>
                         <button class="btn btn-outline-secondary w-100 mb-1 btn-sm" onclick="toggleLibrasMode()">Libras <span id="librasModeLabel">(Inativo)</span></button>
                     </div>
@@ -1089,35 +1084,33 @@ function saveSettings() {
 }
 
 // Função para habilitar/desabilitar o VLibras
-window.toggleLibras = function (enable) {
-    if (enable) {
+window.toggleLibrasMode = function () {
+    state.isLibrasActive = !state.isLibrasActive;
+
+    if (state.isLibrasActive) {
+        // Verifica se o VLibras já foi carregado
         if (!window.vlibrasLoaded) {
-            // Carregar o script VLibras
             const script = document.createElement('script');
             script.src = 'https://vlibras.gov.br/app/vlibras-plugin.js';
+            script.defer = true;
             script.onload = function () {
-                new window.VLibras.Widget('https://vlibras.gov.br/app');
-                window.vlibrasLoaded = true; // Marcar como carregado
+                window.VLibras = new window.VLibras.Widget();
+                window.vlibrasLoaded = true;
+                document.querySelector('[vw]').classList.add('enabled');
             };
             document.body.appendChild(script);
         } else {
-            // Caso já esteja carregado, apenas reativa o widget
-            new window.VLibras.Widget('https://vlibras.gov.br/app');
+            document.querySelector('[vw]').classList.add('enabled');
         }
     } else {
-        // Código para desativar o VLibras, se necessário
-        // Não há suporte nativo para desativar o VLibras, então essa parte
-        // precisaria ser personalizada se quisesse desativar o widget
+        document.querySelector('[vw]').classList.remove('enabled');
     }
-};
 
-// Função para alternar o modo Libras e atualizar o rótulo do botão
-window.toggleLibrasMode = function () {
-    state.isLibrasActive = !state.isLibrasActive;
-    toggleLibras(state.isLibrasActive);
-    saveSettings(); // Salva o estado atual no armazenamento local
+    saveSettings();
     document.getElementById('librasModeLabel').textContent = state.isLibrasActive ? '(Ativo)' : '(Inativo)';
 };
+
+
 
 // Resetar Configurações
 window.resetSettings = function() {
