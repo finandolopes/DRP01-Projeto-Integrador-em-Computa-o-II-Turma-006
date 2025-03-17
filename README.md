@@ -1,5 +1,5 @@
-# 🕹 Criação do Projeto Integrador em Computação II - Turma-006 - UNIVESP
-> Criação do Projeto Integrador PI - II UNIVESP 
+# 🕹 Criação do DRP01-Projeto Integrador em Computação III-Turma 005 - UNIVESP
+> Criação do Projeto Integrador PI - III UNIVESP 
 
 
 ## 📋 Índice
@@ -12,7 +12,7 @@
 - [📌 Créditos](#-Créditos)
 
 ## 📖 Sobre
- - Criação do Projeto Integrador PI - II UNIVESP
+ - Criação do Projeto Integrador PI - III UNIVESP
 
 ## 🚀 Tecnologias utilizadas
 - `PHP`
@@ -21,6 +21,8 @@
 - `Javascript`
 - `MSQL`
 - `Framework - Bootstrap`
+- `API de Localização – Google Maps Embed API`
+- `API VLibras – Responsável por traduzir conteúdos digitais (texto, áudio e vídeo) para a Língua Brasileira de Sinais - LIBRAS`
 - `GitHub`
 - `SQL`
 - `MySQL Workbench`
