@@ -304,50 +304,51 @@
 </script>
 <!-- Seção de Slides -->
 <section id="hero">
-    <div class="hero-container">
-        <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000" role="region" aria-label="Slider de Herói">
-            <ol id="hero-carousel-indicators" class="carousel-indicators">
-                <?php
-                $active = true;
-                $index = 0;
-                while ($row = mysqli_fetch_assoc($result)) {
-                    $activeClass = $active ? 'class="active"' : '';
-                    echo "<li data-bs-target='#heroCarousel' data-bs-slide-to='$index' $activeClass></li>";
-                    $active = false;
-                    $index++;
-                }
-                ?>
-            </ol>
-            <div class="carousel-inner" role="listbox">
-                <?php
-                mysqli_data_seek($result, 0); // Reset result pointer
-                $active = true;
-                while ($row = mysqli_fetch_assoc($result)) {
-                    $image = $row['nome_arquivo'];
-                    $caption = $row['legenda'];
-                    $activeClass = $active ? 'active' : '';
-                    echo "<div class='carousel-item $activeClass' style='background-image: url(assets/img/slider/$image)'>
-                            <div class='carousel-container'>
-                                <div class='container'>
-                                    <p class='animate__animated animate__fadeInDown'>$caption</p>
-                                </div>
+        <!-- ======= hero Section ======= -->
+        <div class="hero-container">
+            <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
+                <ol id="hero-carousel-indicators" class="carousel-indicators"></ol>
+                <div class="carousel-inner" role="listbox">
+                    <div class="carousel-item active" style="background-image: url(assets/img/slider/slider1.jpg)">
+                        <div class="carousel-container">
+                            <div class="container">
+                                <h2 class="animate__animated animate__fadeInDown">Experiência no Mercado</h2>
                             </div>
-                          </div>";
-                    $active = false;
-                }
-                ?>
+                        </div>
+                    </div>
+                    <div class="carousel-item" style="background-image: url(assets/img/slider/slider2.jpg)">
+                        <div class="carousel-container">
+                            <div class="container">
+                                <p class="animate__animated animate__fadeInUp">Transparência e Credibilidade</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item" style="background-image: url(assets/img/slider/slider3.jpg)">
+                        <div class="carousel-container">
+                            <div class="container">
+                                <p class="animate__animated animate__fadeInUp">Foco no Resultado</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item" style="background-image: url(assets/img/slider/slider4.jpg)">
+                        <div class="carousel-container">
+                            <div class="container">
+                                <p class="animate__animated animate__fadeInUp">Alcançar Objetivos</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a class="carousel-control-prev" href="#heroCarousel" role="button" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon bi bi-chevron-left" aria-hidden="true"></span>
+                </a>
+                <a class="carousel-control-next" href="#heroCarousel" role="button" data-bs-slide="next">
+                    <span class="carousel-control-next-icon bi bi-chevron-right" aria-hidden="true"></span>
+                </a>
             </div>
-            <a class="carousel-control-prev" href="#heroCarousel" role="button" data-bs-slide="prev" aria-label="Slide anterior">
-                <span class="carousel-control-prev-icon bi bi-chevron-left" aria-hidden="true"></span>
-            </a>
-            <a class="carousel-control-next" href="#heroCarousel" role="button" data-bs-slide="next" aria-label="Próximo slide">
-                <span class="carousel-control-next-icon bi bi-chevron-right" aria-hidden="true"></span>
-            </a>
         </div>
-    </div>
-</section>
+    </section><!-- Fim Hero Seção Slider -->
 
-<main id="main">
+    <main id="main">
     <!-- Seção Sobre -->
     <section id="sobre" class="about">
         <div class="container" data-aos="fade-up">
@@ -907,6 +908,3 @@
 <script src="form-validation.js"></script>
 </body>
 </html>
-
-
-
